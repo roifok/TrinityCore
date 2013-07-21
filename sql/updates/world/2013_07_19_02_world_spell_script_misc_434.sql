@@ -14,7 +14,16 @@ DELETE FROM `spell_script_names` WHERE `spell_id` IN (61882);
 INSERT INTO `spell_script_names`(`spell_id`, `ScriptName`) VALUES
 (61882,'spell_sha_earthquake');
 
-DELETE FROM `spell_script_names` WHERE `spell_id` IN (86961,86958);
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (86962,86959);
 INSERT INTO `spell_script_names`(`spell_id`, `ScriptName`) VALUES
-(86958,'spell_sha_cleansing_waters'),
-(86961,'spell_sha_cleansing_waters');
+(86959,'spell_sha_cleansing_waters'),
+(86962,'spell_sha_cleansing_waters');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (63373,63374);
+INSERT INTO `spell_script_names`(`spell_id`, `ScriptName`) VALUES
+(63373,'spell_sha_frozen_power'),
+(63374,'spell_sha_frozen_power');
+
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (3606);
+INSERT INTO `spell_script_names`(`spell_id`, `ScriptName`) VALUES
+(3606,'spell_sha_searing_bolt');
