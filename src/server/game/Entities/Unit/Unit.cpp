@@ -7008,7 +7008,7 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
                             return false;
                 }
                 break;
-            }
+            }			
             case SPELLFAMILY_ROGUE:
             {
                 switch (auraSpellInfo->Id)

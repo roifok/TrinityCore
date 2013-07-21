@@ -40,6 +40,7 @@ enum ShamanSpells
     SPELL_SHAMAN_EXHAUSTION                     = 57723,
     SPELL_SHAMAN_FIRE_NOVA_TRIGGERED_R1         = 8349,
     SPELL_SHAMAN_FLAME_SHOCK                    = 8050,
+    SPELL_SHAMAN_EARTH_SHOCK                    = 8042,
     SPELL_SHAMAN_FOCUSED_INSIGHT                = 77800,
     SPELL_SHAMAN_GLYPH_OF_EARTH_SHIELD          = 63279,
     SPELL_SHAMAN_GLYPH_OF_HEALING_STREAM_TOTEM  = 55456,
@@ -62,7 +63,11 @@ enum ShamanSpells
     SPELL_SHAMAN_TOTEM_EARTHBIND_TOTEM          = 6474,
     SPELL_SHAMAN_TOTEM_EARTHEN_POWER            = 59566,
     SPELL_SHAMAN_TOTEM_HEALING_STREAM_HEAL      = 52042,
-    SPELL_SHAMAN_TIDAL_WAVES                    = 53390
+    SPELL_SHAMAN_TIDAL_WAVES                    = 53390,
+    SPELL_SHAMAN_FULMINATION                    = 88766,
+    SPELL_SHAMAN_FULMINATION_TRIGGERED          = 88767,
+    SPELL_SHAMAN_FULMINATION_INFO               = 95774,
+    SPELL_SHAMAN_LIGHTNING_SHIELD_PROC          = 26364,
 };
 
 enum ShamanSpellIcons
@@ -1041,6 +1046,14 @@ class spell_sha_rolling_thunder : public SpellScriptLoader
                 {
                     aura->SetCharges(std::min(aura->GetCharges() + 1, aurEff->GetAmount()));
                     aura->RefreshDuration();
+                    uint8 amount = aura->GetCharges();
+                    Player* player = GetTarget()->ToPlayer();
+                    if (amount > 3)
+                            GetTarget()->CastSpell(GetTarget(), SPELL_SHAMAN_FULMINATION_INFO, true);
+                    else
+                    {
+                            GetTarget()->RemoveAurasDueToSpell(SPELL_SHAMAN_FULMINATION_INFO);							
+                    }
                 }
             }
 
@@ -1055,6 +1068,66 @@ class spell_sha_rolling_thunder : public SpellScriptLoader
             return new spell_sha_rolling_thunder_AuraScript();
         }
 };
+
+//88766 Fulmination handled in 8042 Earth Shock
+class spell_sha_fulmination: public SpellScriptLoader 
+{
+public:
+        spell_sha_fulmination() : SpellScriptLoader ("spell_sha_fulmination") {}
+
+          class spell_sha_fulmination_SpellScript: public SpellScript 
+          {
+                  PrepareSpellScript(spell_sha_fulmination_SpellScript)
+
+                  void HandleFulmination(SpellEffIndex effIndex) 
+                  {
+                          //make caster cast a spell on a unit target of effect
+                          Unit *target = GetHitUnit();
+                          Unit *caster = GetCaster();
+
+                          if (!target || !caster)
+                                  return;
+
+                          AuraEffect *fulminationAura = caster->GetDummyAuraEffect(SPELLFAMILY_SHAMAN, 2010, 0);
+
+
+                          if (!caster->HasAura(SPELL_SHAMAN_FULMINATION))
+                                  return; 
+
+                          Aura * lightningShield = caster->GetAura(SPELL_SHAMAN_LIGHTNING_SHIELD);
+
+                          if (!lightningShield)
+                                  return;
+
+                          uint32 IsCharges = lightningShield->GetCharges();
+
+                          if (IsCharges <= 3)
+                                  return;
+
+                          uint8 usedCharges = IsCharges - 3;
+
+                          SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(SPELL_SHAMAN_LIGHTNING_SHIELD_PROC);
+        
+                          int32 basePoints = (caster->CalculateSpellDamage(target, spellInfo, 0) * 1.2f);
+
+                          int32 damage = usedCharges * (caster->SpellDamageBonusDone(target, spellInfo, basePoints, SPELL_DIRECT_DAMAGE,effIndex));
+
+                          caster->CastCustomSpell(target, SPELL_SHAMAN_FULMINATION_TRIGGERED, &damage, NULL, NULL, true, NULL, fulminationAura);
+                          lightningShield->SetCharges(IsCharges - usedCharges);
+                     }
+
+                  void Register() OVERRIDE
+                  {
+                          OnEffectHitTarget += SpellEffectFn(spell_sha_fulmination_SpellScript::HandleFulmination,EFFECT_FIRST_FOUND, SPELL_EFFECT_ANY);
+                  }
+          };
+
+       SpellScript *GetSpellScript() const OVERRIDE
+       {
+         return new spell_sha_fulmination_SpellScript();
+       }
+};
+
 
 // 82984 - Telluric Currents
 class spell_sha_telluric_currents : public SpellScriptLoader
@@ -1188,4 +1261,5 @@ void AddSC_shaman_spell_scripts()
     new spell_sha_telluric_currents();
     new spell_sha_thunderstorm();
     new spell_sha_tidal_waves();
+    new spell_sha_fulmination();
 }
