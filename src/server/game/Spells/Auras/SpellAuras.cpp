@@ -1194,6 +1194,10 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
             case SPELLFAMILY_DRUID:
                 if (!caster)
                     break;
+                // Sunfire Swapper
+                if (GetId() == 48517) 
+                    if (caster->HasAura(94338))
+                    GetEffect(2)->SetAmount(93402);
                 // Rejuvenation
                 if (GetSpellInfo()->SpellFamilyFlags[0] & 0x10 && GetEffect(EFFECT_0))
                 {

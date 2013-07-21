@@ -3026,6 +3026,14 @@ void SpellMgr::LoadSpellInfoCorrections()
 
         switch (spellInfo->Id)
         {
+            case 77505: //Earthquake
+            spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(3); // 20yd Damn, it hack i know
+            spellInfo->Effects[EFFECT_0].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_10_YARDS); // 10yd
+            break;
+            case 28176: // nether ward // fel armor // demon armor
+            case 687:
+            spellInfo->Effects[2].BasePoints = 91711;
+            break;
             case 53096: // Quetz'lun's Judgment
                 spellInfo->MaxAffectedTargets = 1;
                 break;
@@ -3035,6 +3043,19 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 59735:
                 spellInfo->Effects[EFFECT_1].TriggerSpell = 59736;
                 break;
+            case 82661: // Aspect of the Fox
+                spellInfo->Effects[0].ApplyAuraName = SPELL_AURA_PROC_TRIGGER_SPELL;
+                break;
+            case 73920: // Healing rain targets fix
+            case 81262: // Efflorescence
+            case 88685: // Holy word: Sanctuary
+                spellInfo->Effects[0].ApplyAuraName = SPELL_AURA_PERIODIC_DUMMY;
+                spellInfo->Effects[0].TargetB = TARGET_DEST_DYNOBJ_ALLY;
+                spellInfo->Effects[0].Amplitude = 2000; // Interval
+                break;
+             case 87934: // Serpent Spread
+             case 87935:
+                 spellInfo->Effects[0].Effect = SPELL_EFFECT_APPLY_AURA;
             case 52611: // Summon Skeletons
             case 52612: // Summon Skeletons
                 spellInfo->Effects[EFFECT_0].MiscValueB = 64;
@@ -3402,6 +3423,11 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 62311: // Cosmic Smash (Algalon the Observer)
             case 64596: // Cosmic Smash (Algalon the Observer)
                 spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(6);  // 100yd
+                break;
+            case 101681: // Triggering Spell
+                spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(6);  // 100yd
+                spellInfo->Effects[EFFECT_1].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_2_YARDS); //E102 -> 2yd
+                spellInfo->Effects[EFFECT_0].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_2_YARDS); //E213 -> 2yd
                 break;
             case 64014: // Expedition Base Camp Teleport
             case 64024: // Conservatory Teleport

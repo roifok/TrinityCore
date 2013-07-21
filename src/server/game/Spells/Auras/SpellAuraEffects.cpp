@@ -510,6 +510,28 @@ int32 AuraEffect::CalculateAmount(Unit* caster)
                     }
 
     // custom amount calculations go here
+	if (GetSpellInfo()->SpellFamilyName == SPELLFAMILY_GENERIC)
+            {
+                // Replenishment (0.25% from max)
+                // Infinite Replenishment
+                if (m_spellInfo->SpellIconID == 3184 && m_spellInfo->SpellVisual[0] == 12495)
+                    amount = GetBase()->GetUnitOwner()->GetMaxPower(POWER_MANA) * 25 / 10000;
+            }
+            // Innervate
+            else if (m_spellInfo->Id == 29166)
+            {
+                if (GetBase()->GetCaster() == GetBase()->GetUnitOwner())
+                {
+                    if (GetBase()->GetCaster()->HasAura(33597))  // Dreamstate rank1
+                        amount += 15;
+                    if (GetBase()->GetCaster()->HasAura(33599))  // Dreamstate rank2
+                        amount += 30;
+                }
+                ApplyPct(amount, float(GetBase()->GetUnitOwner()->GetMaxPower(POWER_MANA)) / GetTotalTicks());
+            }
+            // Owlkin Frenzy
+            else if (m_spellInfo->Id == 48391)
+                ApplyPct(amount, GetBase()->GetUnitOwner()->GetCreatePowers(POWER_MANA));
     switch (GetAuraType())
     {
         // crowd control auras
@@ -4798,6 +4820,17 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                         break;
                     }
                     target->RemoveAurasDueToSpell(spellId);
+                    break;
+                }
+                // Survival Instincts
+                case 61336:                                 
+                {
+                    if (!(mode & AURA_EFFECT_HANDLE_REAL))
+                    break;
+                    if (apply)
+                    target->CastSpell(target, 50322, true);
+                    else
+                    target-> RemoveAurasDueToSpell(50322);
                     break;
                 }
                 // Restless Strength

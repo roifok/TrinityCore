@@ -6309,6 +6309,20 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     return false;
                 }
                 break;
+				case 51483: // Earth's Grasp (Rank 1)
+                case 51485: // Earth's Grasp (Rank 2)
+                {
+                    // Earthbind Totem summon only
+                    if (procSpell->Id != 2484)
+                        return false;
+
+                    /*float chance = (float)triggerAmount;
+                    if (!roll_chance_f(chance))
+                        return false;*/
+
+                    triggered_spell_id = 64695;
+                break;                
+              }
             }
             // Frozen Power
             if (dummySpell->SpellIconID == 3780)
@@ -6322,6 +6336,20 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     return false;
 
                 triggered_spell_id = 63685;
+                break;
+            }
+			// Storm, Earth and Fire
+            if (dummySpell->SpellIconID == 3063)
+            {
+                // Earthbind Totem summon only
+                if (procSpell->Id != 2484)
+                    return false;
+
+              /*  float chance = (float)triggerAmount;
+                if (!roll_chance_f(chance))
+                    return false;*/
+
+                triggered_spell_id = 64695;
                 break;
             }
             // Flametongue Weapon (Passive)
@@ -7008,7 +7036,31 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
                             return false;
                 }
                 break;
-            }			
+            }		
+			case SPELLFAMILY_SHAMAN:
+            {
+                switch (auraSpellInfo->Id)
+                {
+                    // Lightning Shield (The Ten Storms set)
+                    case 23551:
+                    {
+                    trigger_spell_id = 23552;
+                    target = victim;
+                    break;						     
+                    }
+					// Nature's Guardian Rank 1, Rank 2, Rank 3
+                    case 30881: 
+                    case 30883: 
+                    case 30884: 
+                    {
+                    if (!HealthBelowPctDamaged(30, damage))
+                    return false;
+                    basepoints0 = int32(CountPctFromMaxHealth(triggerAmount));
+                    break;
+                    }                   
+                }	
+				break;
+			}
             case SPELLFAMILY_ROGUE:
             {
                 switch (auraSpellInfo->Id)
@@ -7051,6 +7103,15 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
     // Custom triggered spells
     switch (auraSpellInfo->Id)
     {
+		// Lambs of the slaughter
+        case 84583:
+        case 84587:
+        case 84588:
+        {
+            if (victim->HasAura(94009, GetGUID()))
+            victim->GetAura(94009, GetGUID())->RefreshDuration();
+            break;
+        }
         // Deep Wounds
         case 12834:
         case 12849:
@@ -7108,6 +7169,13 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
             // When your health drops below 20%
             if (HealthBelowPctDamaged(20, damage) || HealthBelowPct(20))
                 return false;
+            break;
+        }
+		// Shooter Star
+        case 93398: 
+        case 93399: 
+        {
+            ToPlayer()->RemoveSpellCooldown(78674, true);
             break;
         }
         // Greater Heal Refund (Avatar Raiment set)
@@ -7238,19 +7306,30 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
                 return false;
             break;
         }
+        // Astral Shift
+		case 52179: 
+        {
+        if(!procSpell)
+          return false;
+            if (procSpell == 0 || !(procEx & (PROC_EX_NORMAL_HIT|PROC_EX_CRITICAL_HIT)) || this == victim)
+                return false;
+            // Need stun, fear or silence mechanic
+            if (!(procSpell->GetAllEffectsMechanicMask() & ((1<<MECHANIC_SILENCE)|(1<<MECHANIC_STUN)|(1<<MECHANIC_FEAR))))
+                return false;
+            break;
+        }
         // Savage Defense
         case 62606:
         {
             basepoints0 = CalculatePct(triggerAmount, GetTotalAttackPowerValue(BASE_ATTACK));
             break;
         }
-        // Body and Soul
-        case 64128:
-        case 65081:
+        // Efflorescence
+        case 34151:
+        case 81274:
+        case 81275:
         {
-            // Proc only from PW:S cast
-            if (!(procSpell->SpellFamilyFlags[0] & 0x00000001))
-                return false;
+            basepoints0 = CalculatePct(int32(damage), triggerAmount);
             break;
         }
         // Culling the Herd
