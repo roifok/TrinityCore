@@ -1046,15 +1046,14 @@ class spell_sha_rolling_thunder : public SpellScriptLoader
                 {
                     aura->SetCharges(std::min(aura->GetCharges() + 1, aurEff->GetAmount()));
                     aura->RefreshDuration();
-					uint8 amount = aura->GetCharges();
-					Player* player = GetTarget()->ToPlayer();
-					if (amount > 3)
-                            GetTarget()->CastSpell(GetTarget(), 95774, true);
-                        else
-						{
-                            GetTarget()->RemoveAurasDueToSpell(95774);
-							
-                        }
+                    uint8 amount = aura->GetCharges();
+                    Player* player = GetTarget()->ToPlayer();
+                    if (amount > 3)
+                            GetTarget()->CastSpell(GetTarget(), SPELL_SHAMAN_FULMINATION_INFO, true);
+                    else
+                    {
+                            GetTarget()->RemoveAurasDueToSpell(SPELL_SHAMAN_FULMINATION_INFO);							
+                    }
                 }
             }
 
@@ -1117,13 +1116,13 @@ public:
                           lightningShield->SetCharges(IsCharges - usedCharges);
                      }
 
-                  void Register() 
+                  void Register() OVERRIDE
                   {
                           OnEffectHitTarget += SpellEffectFn(spell_sha_fulmination_SpellScript::HandleFulmination,EFFECT_FIRST_FOUND, SPELL_EFFECT_ANY);
                   }
           };
 
-       SpellScript *GetSpellScript() const 
+       SpellScript *GetSpellScript() const OVERRIDE
        {
          return new spell_sha_fulmination_SpellScript();
        }
