@@ -16,3 +16,7 @@ CMakeLists.txt.user
 *.BACKUP.*
 *.BASE.*
 *.LOCAL.*
+src/server/game/Scripting/ScriptLoader.cpp
+src/server/scripts/Custom/npc_beastmaster.cpp
+src/server/scripts/Custom/npc_enchanting.cpp
+src/server/scripts/Custom/CMakeLists.txt

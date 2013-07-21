@@ -7009,6 +7009,33 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
                 }
                 break;
             }
+			case SPELLFAMILY_SHAMAN:
+            {
+                switch (auraSpellInfo->Id)
+                {
+                    // Rolling Thunder
+                    case 88765:
+	                {
+                        if (Aura * lightningShield = GetAura(324))
+                        {
+                        uint8 lsCharges = lightningShield->GetCharges();
+                        if (lsCharges < 9)
+                        lightningShield->SetCharges(lsCharges + 1);
+
+                        if (HasAura(88766))
+                        {
+                        if (lsCharges > 5)
+                            CastSpell(this, 95774, true);
+                        else
+                            RemoveAurasDueToSpell(95774);
+                        }
+        
+                       }
+                       break;
+                   }
+                }
+                break;
+            }
             case SPELLFAMILY_ROGUE:
             {
                 switch (auraSpellInfo->Id)
