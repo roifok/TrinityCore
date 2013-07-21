@@ -1045,7 +1045,16 @@ class spell_sha_rolling_thunder : public SpellScriptLoader
                 if (Aura* aura = GetTarget()->GetAura(SPELL_SHAMAN_LIGHTNING_SHIELD))
                 {
                     aura->SetCharges(std::min(aura->GetCharges() + 1, aurEff->GetAmount()));
-                    aura->RefreshDuration();					
+                    aura->RefreshDuration();
+					uint8 amount = aura->GetCharges();
+					Player* player = GetTarget()->ToPlayer();
+					if (amount > 3)
+                            GetTarget()->CastSpell(GetTarget(), 95774, true);
+                        else
+						{
+                            GetTarget()->RemoveAurasDueToSpell(95774);
+							
+                        }
                 }
             }
 
@@ -1083,10 +1092,10 @@ public:
                           AuraEffect *fulminationAura = caster->GetDummyAuraEffect(SPELLFAMILY_SHAMAN, 2010, 0);
 
 
-                          if (!caster->HasAura(88766))
+                          if (!caster->HasAura(SPELL_SHAMAN_FULMINATION))
                                   return; 
 
-                          Aura * lightningShield = caster->GetAura(324);
+                          Aura * lightningShield = caster->GetAura(SPELL_SHAMAN_LIGHTNING_SHIELD);
 
                           if (!lightningShield)
                                   return;
@@ -1253,5 +1262,5 @@ void AddSC_shaman_spell_scripts()
     new spell_sha_telluric_currents();
     new spell_sha_thunderstorm();
     new spell_sha_tidal_waves();
-	new spell_sha_fulmination();
+    new spell_sha_fulmination();
 }
