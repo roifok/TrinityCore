@@ -6927,7 +6927,7 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
                     trigger_spell_id = 68130;
                     target = this;
                     break;
-                }
+                }            
                 break;
             }
             case SPELLFAMILY_PALADIN:

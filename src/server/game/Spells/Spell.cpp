@@ -3031,7 +3031,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggered
             SendChannelUpdate(0);
             triggeredByAura->GetBase()->SetDuration(0);
         }
-
+       
         SendCastResult(result);
 
         finish(false);
