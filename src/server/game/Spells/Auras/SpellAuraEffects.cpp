@@ -5398,7 +5398,7 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster) const
                     target->CastCustomSpell(target, 22845, &regen, 0, 0, true, 0, this);
                     target->SetPower(POWER_RAGE, rage-mod);
                     break;
-                }
+                }                
             }
             break;
         }

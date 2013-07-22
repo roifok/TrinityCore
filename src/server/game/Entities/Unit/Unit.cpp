@@ -7297,14 +7297,6 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
             basepoints0 = CalculatePct(triggerAmount, GetTotalAttackPowerValue(BASE_ATTACK));
             break;
         }
-        // Efflorescence
-        case 34151:
-        case 81274:
-        case 81275:
-        {
-            basepoints0 = CalculatePct(int32(damage), triggerAmount);
-            break;
-        }
         // Culling the Herd
         case 70893:
         {
