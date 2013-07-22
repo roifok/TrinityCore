@@ -1519,6 +1519,15 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                         caster->RemoveAurasDueToSpell(100001);
                 }
             }
+            // Bane of havoc
+            if (GetId() == 80240)
+                if (caster)
+                {   
+                    if (apply)
+                        caster->CastSpell(caster, 85466, true, 0, 0, target->GetGUID());
+                    else
+                        caster->RemoveAurasDueToSpell(85466);
+                }
             break;
     }
 }

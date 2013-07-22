@@ -5048,6 +5048,16 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
         {
             switch (dummySpell->Id)
             {
+                // Bane of Havoc aura
+                case 85466: 
+                {
+                    Unit* bohTarget = triggeredByAura->GetCaster();
+                    if (!bohTarget || bohTarget->GetGUID() == victim->GetGUID() || !bohTarget->HasAura(80240))
+                        break;
+                    if (int32 bp0 = CalculatePct(int32(damage), bohTarget->GetAuraEffect(80240, EFFECT_0, GetGUID())->GetAmount()))
+                        CastCustomSpell(bohTarget, 85455, &bp0, 0, 0, true);
+                    break;
+                }
                 // Unstable Power
                 case 24658:
                 {
