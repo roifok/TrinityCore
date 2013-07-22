@@ -35,7 +35,7 @@ enum HunterSpells
     SPELL_HUNTER_ASPECT_OF_THE_BEAST_PET            = 61669,
     SPELL_HUNTER_ASPECT_OF_THE_VIPER_ENERGIZE       = 34075,
     SPELL_HUNTER_BESTIAL_WRATH                      = 19574,
-	SPELL_HUNTER_CHIMERA_SHOT_HEALING				= 53353,
+    SPELL_HUNTER_CHIMERA_SHOT_HEAL                  = 53353,
     SPELL_HUNTER_GLYPH_OF_ASPECT_OF_THE_VIPER       = 56851,
     SPELL_HUNTER_IMPROVED_MEND_PET                  = 24406,
     SPELL_HUNTER_INVIGORATION_TRIGGERED             = 53398,
@@ -49,6 +49,7 @@ enum HunterSpells
     SPELL_HUNTER_PET_CARRION_FEEDER_TRIGGERED       = 54045,
     SPELL_HUNTER_RAPID_RECUPERATION                 = 58883,
     SPELL_HUNTER_READINESS                          = 23989,
+    SPELL_HUNTER_SERPENT_STING                      = 1978,
     SPELL_HUNTER_SNIPER_TRAINING_R1                 = 53302,
     SPELL_HUNTER_SNIPER_TRAINING_BUFF_R1            = 64418,
     SPELL_HUNTER_STEADY_SHOT_FOCUS                  = 77443,
@@ -178,13 +179,19 @@ class spell_hun_chimera_shot : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
             {
+<<<<<<< HEAD
                 if (!sSpellMgr->GetSpellInfo(SPELL_HUNTER_CHIMERA_SHOT_HEALING))
+=======
+                if (!sSpellMgr->GetSpellInfo(SPELL_HUNTER_CHIMERA_SHOT_HEAL) ||
+                    !sSpellMgr->GetSpellInfo(SPELL_HUNTER_SERPENT_STING))
+>>>>>>> trinitycore/4.3.4
                     return false;
                 return true;
             }
 
             void HandleScriptEffect(SpellEffIndex /*effIndex*/)
             {
+<<<<<<< HEAD
 				Unit* target = GetHitUnit();
 				if (!target)
                  return;
@@ -193,6 +200,12 @@ class spell_hun_chimera_shot : public SpellScriptLoader
                 serpentSting->RefreshDuration();
 
 				GetCaster()->CastSpell(GetCaster(),SPELL_HUNTER_CHIMERA_SHOT_HEALING,true);    
+=======
+                GetCaster()->CastSpell(GetCaster(), SPELL_HUNTER_CHIMERA_SHOT_HEAL, true);
+
+                if (Aura* aur = GetHitUnit()->GetAura(SPELL_HUNTER_SERPENT_STING))
+                    aur->SetDuration(aur->GetSpellInfo()->GetMaxDuration(), true);
+>>>>>>> trinitycore/4.3.4
             }
 
             void Register() OVERRIDE
@@ -866,7 +879,6 @@ class spell_hun_tame_beast : public SpellScriptLoader
         }
 };
 
-// -24604 - Furious Howl
 //  53434 - Call of the Wild
 class spell_hun_target_only_pet_and_owner : public SpellScriptLoader
 {
