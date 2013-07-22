@@ -179,33 +179,23 @@ class spell_hun_chimera_shot : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
             {
-<<<<<<< HEAD
-                if (!sSpellMgr->GetSpellInfo(SPELL_HUNTER_CHIMERA_SHOT_HEALING))
-=======
-                if (!sSpellMgr->GetSpellInfo(SPELL_HUNTER_CHIMERA_SHOT_HEAL) ||
-                    !sSpellMgr->GetSpellInfo(SPELL_HUNTER_SERPENT_STING))
->>>>>>> trinitycore/4.3.4
+                if (!sSpellMgr->GetSpellInfo(SPELL_HUNTER_CHIMERA_SHOT_HEAL) || !sSpellMgr->GetSpellInfo(SPELL_HUNTER_SERPENT_STING))
                     return false;
                 return true;
             }
 
             void HandleScriptEffect(SpellEffIndex /*effIndex*/)
             {
-<<<<<<< HEAD
 				Unit* target = GetHitUnit();
 				if (!target)
                  return;
 				//Refreshing Serpent Sting Aura if present
 				if (Aura* serpentSting = target->GetAura(1978, GetCaster()->GetGUID()))
-                serpentSting->RefreshDuration();
-
-				GetCaster()->CastSpell(GetCaster(),SPELL_HUNTER_CHIMERA_SHOT_HEALING,true);    
-=======
+                serpentSting->RefreshDuration();  
                 GetCaster()->CastSpell(GetCaster(), SPELL_HUNTER_CHIMERA_SHOT_HEAL, true);
 
                 if (Aura* aur = GetHitUnit()->GetAura(SPELL_HUNTER_SERPENT_STING))
                     aur->SetDuration(aur->GetSpellInfo()->GetMaxDuration(), true);
->>>>>>> trinitycore/4.3.4
             }
 
             void Register() OVERRIDE
