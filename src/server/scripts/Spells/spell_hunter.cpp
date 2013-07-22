@@ -51,6 +51,7 @@ enum HunterSpells
     SPELL_HUNTER_READINESS                          = 23989,
     SPELL_HUNTER_SNIPER_TRAINING_R1                 = 53302,
     SPELL_HUNTER_SNIPER_TRAINING_BUFF_R1            = 64418,
+    SPELL_HUNTER_STEADY_SHOT_FOCUS                  = 77443,
     SPELL_HUNTER_THRILL_OF_THE_HUNT                 = 34720,
     SPELL_DRAENEI_GIFT_OF_THE_NAARU                 = 59543,
     SPELL_HUNTER_IMPROVED_STEADY_SHOT               = 53220,
@@ -774,6 +775,45 @@ class spell_hun_sniper_training : public SpellScriptLoader
         }
 };
 
+// 56641 - Steady Shot
+class spell_hun_steady_shot : public SpellScriptLoader
+{
+    public:
+        spell_hun_steady_shot() : SpellScriptLoader("spell_hun_steady_shot") { }
+
+        class spell_hun_steady_shot_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_hun_steady_shot_SpellScript);
+
+            bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
+            {
+                if (!sSpellMgr->GetSpellInfo(SPELL_HUNTER_STEADY_SHOT_FOCUS))
+                    return false;
+                return true;
+            }
+
+            bool Load() OVERRIDE
+            {
+                return GetCaster()->GetTypeId() == TYPEID_PLAYER;
+            }
+
+            void HandleOnHit()
+            {
+                GetCaster()->CastSpell(GetCaster(), SPELL_HUNTER_STEADY_SHOT_FOCUS, true);
+            }
+
+            void Register() OVERRIDE
+            {
+                OnHit += SpellHitFn(spell_hun_steady_shot_SpellScript::HandleOnHit);
+            }
+        };
+
+        SpellScript* GetSpellScript() const OVERRIDE
+        {
+            return new spell_hun_steady_shot_SpellScript();
+        }
+};
+
 // 1515 - Tame Beast
 class spell_hun_tame_beast : public SpellScriptLoader
 {
@@ -1226,6 +1266,7 @@ void AddSC_hunter_spell_scripts()
     new spell_hun_readiness();
     new spell_hun_scatter_shot();
     new spell_hun_sniper_training();
+    new spell_hun_steady_shot();
     new spell_hun_tame_beast();
     new spell_hun_target_only_pet_and_owner();
     new spell_hun_thrill_of_the_hunt();
