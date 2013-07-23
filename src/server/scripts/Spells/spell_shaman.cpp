@@ -146,8 +146,7 @@ class spell_sha_ancestral_awakening_proc : public SpellScriptLoader
 
             void HandleDummy(SpellEffIndex /*effIndex*/)
             {
-                int32 damage = GetEffectValue();
-                GetCaster()->CastCustomSpell(GetHitUnit(), SPELL_SHAMAN_ANCESTRAL_AWAKENING_PROC, &damage, NULL, NULL, true);
+                GetCaster()->CastCustomSpell(SPELL_SHAMAN_ANCESTRAL_AWAKENING_PROC, SPELLVALUE_BASE_POINT0, GetEffectValue(), GetHitUnit(), true);
             }
 
             void Register() OVERRIDE
@@ -277,9 +276,8 @@ class spell_sha_earth_shield : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_EARTH_SHIELD_HEAL))
-                    return false;
-                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_GLYPH_OF_EARTH_SHIELD))
+                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_EARTH_SHIELD_HEAL) ||
+                    !sSpellMgr->GetSpellInfo(SPELL_SHAMAN_GLYPH_OF_EARTH_SHIELD))
                     return false;
                 return true;
             }
@@ -340,7 +338,8 @@ class spell_sha_earthbind_totem : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_TOTEM_EARTHBIND_TOTEM) || !sSpellMgr->GetSpellInfo(SPELL_SHAMAN_TOTEM_EARTHEN_POWER))
+                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_TOTEM_EARTHBIND_TOTEM) ||
+                    !sSpellMgr->GetSpellInfo(SPELL_SHAMAN_TOTEM_EARTHEN_POWER))
                     return false;
                 return true;
             }
@@ -512,9 +511,8 @@ class spell_sha_flame_shock : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spell*/) OVERRIDE
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_LAVA_FLOWS_R1))
-                    return false;
-                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_LAVA_FLOWS_TRIGGERED_R1))
+                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_LAVA_FLOWS_R1) ||
+                    !sSpellMgr->GetSpellInfo(SPELL_SHAMAN_LAVA_FLOWS_TRIGGERED_R1))
                     return false;
                 return true;
             }
@@ -526,7 +524,8 @@ class spell_sha_flame_shock : public SpellScriptLoader
                     // Lava Flows
                     if (AuraEffect const* aurEff = caster->GetDummyAuraEffect(SPELLFAMILY_SHAMAN, SHAMAN_ICON_ID_SHAMAN_LAVA_FLOW, EFFECT_0))
                     {
-                        if (sSpellMgr->GetFirstSpellInChain(SPELL_SHAMAN_LAVA_FLOWS_R1) != sSpellMgr->GetFirstSpellInChain(aurEff->GetId()))
+                        SpellInfo const* firstRankSpellInfo = sSpellMgr->GetSpellInfo(SPELL_SHAMAN_LAVA_FLOWS_R1);
+                        if (!aurEff->GetSpellInfo()->IsRankOf(firstRankSpellInfo))
                             return;
 
                         int32 basepoints = aurEff->GetAmount();
@@ -816,9 +815,9 @@ class spell_sha_item_mana_surge : public SpellScriptLoader
             {
                 PreventDefaultAction();
                 int32 mana = eventInfo.GetDamageInfo()->GetSpellInfo()->CalcPowerCost(GetTarget(), SpellSchoolMask(eventInfo.GetDamageInfo()->GetSchoolMask()));
-                int32 basePoints0 = int32(CalculatePct(mana, 35));
+                mana = int32(CalculatePct(mana, 35));
 
-                GetTarget()->CastCustomSpell(GetTarget(), SPELL_SHAMAN_ITEM_MANA_SURGE, &basePoints0, NULL, NULL, true, NULL, aurEff);
+                GetTarget()->CastCustomSpell(SPELL_SHAMAN_ITEM_MANA_SURGE, SPELLVALUE_BASE_POINT0, mana, GetTarget(), true, NULL, aurEff);
             }
 
             void Register() OVERRIDE
