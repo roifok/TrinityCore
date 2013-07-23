@@ -1251,51 +1251,6 @@ class spell_hun_improved_serpent_sting : public SpellScriptLoader
         }
 };
 
-// 82925 - Master Marksman
-class spell_hun_master_marksman : public SpellScriptLoader
-{
-    public:
-        spell_hun_master_marksman() : SpellScriptLoader("spell_hun_master_marksman") { }
-
-        class spell_hun_master_marksman_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_hun_master_marksman_AuraScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
-            {
-                if (!sSpellMgr->GetSpellInfo(SPELL_HUNTER_MASTER_MARKSMAN_R1) || !sSpellMgr->GetSpellInfo(SPELL_HUNTER_MASTER_MARKSMAN_R2) || !sSpellMgr->GetSpellInfo(SPELL_HUNTER_MASTER_MARKSMAN_R3))
-                    return false;
-                return true;
-            }
-
-            void HandleProcTriggerSpell(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
-            {
-                PreventDefaultAction();
-
-                if (eventInfo.GetSpellInfo()->Id == SPELL_HUNTER_MASTER_MARKSMAN)
-                {                   
-                    if (aurEff->GetBase()->GetStackAmount() == 5)
-                    {
-                        GetCaster()->CastSpell(GetCaster(), SPELL_HUNTER_FIRE_BUFF, true);
-                        aurEff->GetBase()->SetStackAmount(0);
-                    }
-                }
-                else
-                    aurEff->GetBase()->SetStackAmount(0);
-            }
-
-            void Register() OVERRIDE
-            {
-                OnEffectProc += AuraEffectProcFn(spell_hun_master_marksman_AuraScript::HandleProcTriggerSpell, EFFECT_0, SPELL_AURA_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const OVERRIDE
-        {
-            return new spell_hun_master_marksman_AuraScript();
-        }
-};
-
 
 void AddSC_hunter_spell_scripts()
 {
@@ -1324,5 +1279,4 @@ void AddSC_hunter_spell_scripts()
     new spell_hun_improved_steady_shot();
     new spell_hun_improved_serpent_sting();
     new spell_hun_tnt();
-    new spell_hun_master_marksman();
 }
