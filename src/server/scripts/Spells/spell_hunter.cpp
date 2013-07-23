@@ -65,11 +65,6 @@ enum HunterSpells
     SPELL_HUNTER_INSTANT_SERPENT_STING              = 83077,
     SPELL_HUNTER_IMPROVED_SERPENT_STING_R1          = 19464,
     SPELL_HUNTER_IMPROVED_SERPENT_STING_R2          = 82834,
-    SPELL_HUNTER_MASTER_MARKSMAN                    = 82925,
-    SPELL_HUNTER_FIRE_BUFF                          = 82926,
-    SPELL_HUNTER_MASTER_MARKSMAN_R1                 = 34485,
-    SPELL_HUNTER_MASTER_MARKSMAN_R2                 = 34486,
-    SPELL_HUNTER_MASTER_MARKSMAN_R3                 = 34487,
     
 };
 
