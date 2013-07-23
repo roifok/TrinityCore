@@ -191,12 +191,7 @@ class spell_hun_chimera_shot : public SpellScriptLoader
                  return;
 				//Refreshing Serpent Sting Aura if present
                 GetCaster()->CastSpell(GetCaster(), SPELL_HUNTER_CHIMERA_SHOT_HEAL, true);
-<<<<<<< HEAD
-                if (Aura* aur = GetHitUnit()->GetAura(SPELL_HUNTER_SERPENT_STING))
-=======
-
                 if (Aura* aur = GetHitUnit()->GetAura(SPELL_HUNTER_SERPENT_STING, GetCaster()->GetGUID()))
->>>>>>> trinitycore/4.3.4
                     aur->SetDuration(aur->GetSpellInfo()->GetMaxDuration(), true);
             }
 

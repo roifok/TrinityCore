@@ -1479,7 +1479,7 @@ public:
     }
 };
 
-///63373, 63374 - Frozen Power
+///63373, 63374 - Frozen Power handled by Frost Shock 8056
 class spell_sha_frozen_power : public SpellScriptLoader
 {
     public:
@@ -1495,18 +1495,18 @@ class spell_sha_frozen_power : public SpellScriptLoader
 
                 if (Unit* target = GetHitUnit())
                 {
-		            if (caster->HasAura(63373))
-				   if (roll_chance_i(50))
+		           if (caster->HasAura(63373))                   
+				       if (roll_chance_i(50))
 		        	       if (caster->GetDistance(target) > 15.0f || !caster->IsWithinDistInMap(target, 15.0f)) 
 			  	           caster->CastSpell(target, SPELL_SHAMAN_FROZEN_POWER_TRIGGER, true);
-
-		  	      if (caster->HasAura(63374))
+				   
+		  	       if (caster->HasAura(63374))                   
 		     	         if (caster->GetDistance(target) > 15.0f || !caster->IsWithinDistInMap(target, 15.0f)) 
 			             caster->CastSpell(target, SPELL_SHAMAN_FROZEN_POWER_TRIGGER, true);
+				   
                 }
 
             } 
-
 
             void Register() OVERRIDE
             {

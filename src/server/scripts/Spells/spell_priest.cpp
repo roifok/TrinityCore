@@ -60,6 +60,8 @@ enum PriestSpells
     SPELL_PRIEST_T9_HEALING_2P                      = 67201,
     SPELL_PRIEST_VAMPIRIC_EMBRACE_HEAL              = 15290,
     SPELL_PRIEST_VAMPIRIC_TOUCH_DISPEL              = 64085,
+    SPELL_PRIEST_SHADOWFIEND                        = 34433,
+    SPELL_PRIEST_SHADOWFIEND_TRIGGERED              = 28305,
 };
 
 enum PriestSpellIcons
@@ -1079,6 +1081,45 @@ class spell_pri_vampiric_touch : public SpellScriptLoader
         AuraScript* GetAuraScript() const OVERRIDE
         {
             return new spell_pri_vampiric_touch_AuraScript();
+        }
+};
+
+// Shadowfiend
+class spell_pri_shadowfiend : public SpellScriptLoader
+{
+    public:
+        spell_pri_shadowfiend() : SpellScriptLoader("spell_pri_shadowfiend") { }
+
+        class spell_pri_shadowfiend_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_pri_shadowfiend_SpellScript);
+
+            bool Validate(SpellInfo const* spellEntry)
+            {
+                return sSpellMgr->GetSpellInfo(SPELL_PRIEST_SHADOWFIEND) && sSpellMgr->GetSpellInfo(SPELL_PRIEST_SHADOWFIEND_TRIGGERED);
+            }
+
+            void HandleTriggerSpell(SpellEffIndex /*effIndex*/)
+            {
+                Unit* unitTarget = GetHitUnit();
+                if (!unitTarget)
+                    return;
+
+                if (Unit* pet = unitTarget->GetGuardianPet())
+                {
+                    pet->CastSpell(pet, SPELL_PRIEST_SHADOWFIEND_TRIGGERED, true);
+                }
+            }
+
+            void Register()
+            {
+                OnEffectHitTarget += SpellEffectFn(spell_pri_shadowfiend_SpellScript::HandleTriggerSpell, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL);
+            }
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_pri_shadowfiend_SpellScript;
         }
 };
 

@@ -2067,31 +2067,123 @@ public:
 /*######
 # npc_shadowfiend
 ######*/
-#define GLYPH_OF_SHADOWFIEND_MANA         58227
-#define GLYPH_OF_SHADOWFIEND              58228
+enum Shadowfiend
+{
+    MANA_LEECH                       = 28305,
+    GLYPH_OF_SHADOWFIEND_MANA        = 58227,
+    GLYPH_OF_SHADOWFIEND             = 58228
+};
 
 class npc_shadowfiend : public CreatureScript
 {
-    public:
-        npc_shadowfiend() : CreatureScript("npc_shadowfiend") { }
+public:
+    npc_shadowfiend() : CreatureScript("npc_shadowfiend") { }
 
-        struct npc_shadowfiendAI : public PetAI
-        {
-            npc_shadowfiendAI(Creature* creature) : PetAI(creature) {}
+    struct npc_shadowfiendAI : public ScriptedAI
+    {
+        npc_shadowfiendAI(Creature* creature) : ScriptedAI(creature) {} 
 
-            void JustDied(Unit* /*killer*/) OVERRIDE
-            {
-                if (me->IsSummon())
-                    if (Unit* owner = me->ToTempSummon()->GetSummoner())
-                        if (owner->HasAura(GLYPH_OF_SHADOWFIEND))
-                            owner->CastSpell(owner, GLYPH_OF_SHADOWFIEND_MANA, true);
-            }
-        };
+        void Reset() OVERRIDE
+         {
 
-        CreatureAI* GetAI(Creature* creature) const OVERRIDE
-        {
-            return new npc_shadowfiendAI(creature);
+            if (me->IsSummon())
+                if (Unit* owner = me->ToTempSummon()->GetSummoner())
+                    if (Unit* pet = owner->GetGuardianPet())
+                        pet->CastSpell(pet, MANA_LEECH, true);
         }
+
+
+        void DamageTaken(Unit* /*killer*/, uint32& damage)
+         {
+            if (me->IsSummon())
+                if (Unit* owner = me->ToTempSummon()->GetSummoner())
+                    if (owner->HasAura(GLYPH_OF_SHADOWFIEND) && damage >= me->GetHealth())
+                        owner->CastSpell(owner, GLYPH_OF_SHADOWFIEND_MANA, true);
+        }
+
+		 void UpdateAI(uint32 diff) OVERRIDE
+         {
+
+            if (!UpdateVictim())
+                return;
+
+            DoMeleeAttackIfReady();
+         }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const OVERRIDE
+    {
+        return new npc_shadowfiendAI(creature);
+    }
+};
+
+
+/*######
+# npc_shadowy_apparition
+######*/
+class npc_shadowy_apparition: public CreatureScript
+{
+public:
+    npc_shadowy_apparition () : CreatureScript("npc_shadowy_apparition") { }
+
+    struct npc_shadowy_apparitionAI: public ScriptedAI
+    {
+        npc_shadowy_apparitionAI (Creature* c) : ScriptedAI(c) {}
+
+        uint64 targetGuid;
+
+        void Reset () OVERRIDE
+        {
+            Unit* owner = me->GetOwner();
+            if (!owner)
+                return;
+            
+            me->SetWalk(true);
+            owner->CastSpell(me, 87213, false);
+            me->CastSpell(me, 87427, true);
+
+            if (me->GetCharmInfo())
+            {
+                me->GetCharmInfo()->SetIsAtStay(true);
+                me->GetCharmInfo()->SetIsFollowing(false);
+                me->GetCharmInfo()->SetIsReturning(false);
+            }
+        }
+
+        void MoveInLineOfSight (Unit* who)
+        {
+            if(who->GetGUID() == targetGuid && me->GetDistance(who) <= 1.0f)
+            {
+                me->CastCustomSpell(who, 87532, NULL, NULL, NULL, true, 0, 0, me->GetOwnerGUID());
+                me->CastSpell(me, 87529, true);
+                me->DisappearAndDie();
+            }
+        }
+
+        void UpdateAI (uint32 diff) OVERRIDE
+        {
+            if (!UpdateVictim())
+            {
+                Unit * owner = me->GetOwner();
+
+                if (!owner)
+                    return;
+
+                if (Unit* target = owner->getAttackerForHelper())
+                {
+                    me->Attack(target, false);
+                    me->AddThreat(target, 100.0f);
+                    me->GetMotionMaster()->MoveChase(target, 0.0f, 0.0f);
+                    targetGuid = target->GetGUID();
+                }
+            }
+        }
+    };
+
+    CreatureAI* GetAI (Creature* creature) const OVERRIDE
+    {
+        return new npc_shadowy_apparitionAI(creature);
+    }
 };
 
 /*######
@@ -2994,6 +3086,7 @@ void AddSC_npcs_special()
     new npc_mojo();
     new npc_training_dummy();
     new npc_shadowfiend();
+	new npc_shadowy_apparition;
     new npc_wormhole();
     new npc_pet_trainer();
     new npc_locksmith();
