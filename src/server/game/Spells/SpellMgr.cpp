@@ -2226,8 +2226,8 @@ void SpellMgr::LoadSpellLinked()
 
     mSpellLinkedMap.clear();    // need for reload case
 
-    //                                                0              1             2
-    QueryResult result = WorldDatabase.Query("SELECT spell_trigger, spell_effect, type FROM spell_linked_spell");
+    //                                                0              1             2        3
+    QueryResult result = WorldDatabase.Query("SELECT spell_trigger, spell_effect, type, req_aura FROM spell_linked_spell");
     if (!result)
     {
         TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 linked spells. DB table `spell_linked_spell` is empty.");
@@ -2242,6 +2242,7 @@ void SpellMgr::LoadSpellLinked()
         int32 trigger = fields[0].GetInt32();
         int32 effect = fields[1].GetInt32();
         int32 type = fields[2].GetUInt8();
+        int32 req_aura = fields[3].GetUInt32();
 
         SpellInfo const* spellInfo = GetSpellInfo(abs(trigger));
         if (!spellInfo)
@@ -2253,6 +2254,12 @@ void SpellMgr::LoadSpellLinked()
         if (!spellInfo)
         {
             TC_LOG_ERROR(LOG_FILTER_SQL, "Spell %u listed in `spell_linked_spell` does not exist", abs(effect));
+            continue;
+        }
+
+        if (req_aura != 0 && !sSpellStore.LookupEntry(req_aura))
+        {
+            sLog->outError(LOG_FILTER_SQL, "Aura %u listed in `spell_linked_spell` does not exist", req_aura);
             continue;
         }
 
@@ -3047,6 +3054,7 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->Effects[0].ApplyAuraName = SPELL_AURA_PROC_TRIGGER_SPELL;
                 break;
             case 73920: // Healing rain targets fix
+            case 81262: // Efflorescence
             case 88685: // Holy word: Sanctuary
                 spellInfo->Effects[0].ApplyAuraName = SPELL_AURA_PERIODIC_DUMMY;
                 spellInfo->Effects[0].TargetB = TARGET_DEST_DYNOBJ_ALLY;

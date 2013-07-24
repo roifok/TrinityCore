@@ -4804,12 +4804,12 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                 case 61336:                                 
                 {
                     if (!(mode & AURA_EFFECT_HANDLE_REAL))
-                    break;
+                        break;
                     if (apply)
-                    target->CastSpell(target, 50322, true);
+                        target->CastSpell(target, 50322, true);
                     else
-                    target-> RemoveAurasDueToSpell(50322);
-                    break;
+                        target-> RemoveAurasDueToSpell(50322);
+                        break;
                 }
                 // Restless Strength
                 case 24661:

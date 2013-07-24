@@ -1368,6 +1368,10 @@ void Spell::EffectHeal(SpellEffIndex /*effIndex*/)
 
             addhealth += tickheal * tickcount;
 
+            // Efflorescence
+            if (caster->HasAura(34151) || caster->HasAura(81274) || caster->HasAura(81275))
+            caster->CastSpell(unitTarget, 81262, true);
+
             // Glyph of Swiftmend
             if (!caster->HasAura(54824))
                 unitTarget->RemoveAura(targetAura->GetId(), targetAura->GetCasterGUID());

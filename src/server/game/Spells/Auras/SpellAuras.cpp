@@ -1391,9 +1391,60 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                 }
                 break;
             case SPELLFAMILY_ROGUE:
-                // Remove Vanish on stealth remove
-                if (GetId() == 1784)
-                    target->RemoveAurasWithFamily(SPELLFAMILY_ROGUE, 0x0000800, 0, 0, target->GetGUID());
+                // Blackjack/Groggy on sap removal
+                if(GetId() == 6770)
+                {
+                    if(caster->HasAura(79125)) // Rank 2
+                        caster->CastSpell(target, 79126, true);
+                    else if(caster->HasAura(79123)) // Rank 1
+                        caster->CastSpell(target, 79124, true);
+                }
+                // Cast stealth at vanish 3 seconds end
+                if (GetId() == 11327 && removeMode == AURA_REMOVE_BY_EXPIRE)
+                    caster->AddAura(1784 /* == stealth */, caster);
+                // Rupture & venomeous wounds energy regain at target's death
+                else if(GetId() == 1943 && removeMode == AURA_REMOVE_BY_DEATH &&        // If rupture's target dies
+                    (caster->HasSpell(79133) || caster->HasSpell(79134)))               // Only if has talent
+                {
+                    int32 basepoints0 = GetDuration() / 200;
+                    // for each remaining 0.2 second, give 1 energy
+                    caster->CastCustomSpell(caster, 51637, &basepoints0, NULL, NULL, true);
+                }
+                // Blackjack/Groggy on sap removal
+                else if(GetId() == 6770)
+                {
+                   if(caster->HasAura(79125)) // Rank 2
+                        caster->CastSpell(target, 79126, true);
+                    else if(caster->HasAura(79123)) // Rank 1
+                        caster->CastSpell(target, 79124, true);
+				}
+                // Rupture & venomeous wounds energy regain at target's death
+                       if(GetId() == 1943 && removeMode == AURA_REMOVE_BY_DEATH &&    // If rupture's target dies
+                         (caster->HasSpell(79133) || caster->HasSpell(79134)))            // Only if has talent
+                        {
+                            float chance;
+                            uint32 energy = 0, talentId = 79134, remainingTicks;
+                            if (AuraEffect* aurEff = GetEffect(0))
+                            {
+                                remainingTicks = aurEff->GetTotalTicks() - aurEff->GetTickNumber();
+
+                                if(caster->HasSpell(79133))
+                                {
+                                    chance = 30.0f;
+                                    talentId = 79133;
+                                }
+                                else
+                                    chance = 60.0f;
+                        
+                                // for each remaining tick, calculate chances
+                                for(remainingTicks; remainingTicks > 0; remainingTicks--)
+                                    if(roll_chance_f(chance))
+                                        energy += 10;
+
+                            // Give energy
+                            caster->EnergizeBySpell(caster, talentId, energy, POWER_ENERGY);        // Hacky too, isn't it ?
+                            }
+                    }
                 break;
             case SPELLFAMILY_PALADIN:
                 // Remove the immunity shield marker on Forbearance removal if AW marker is not present

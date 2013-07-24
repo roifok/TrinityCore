@@ -1249,7 +1249,7 @@ public:
                     continue;
 
                 uint32 unleashSpell = 0;
-                                Unit *target = GetExplTargetUnit();
+                Unit *target = GetExplTargetUnit();
                 bool hostileTarget = plr->IsHostileTo(target);
                 bool hostileSpell = true;
 
@@ -1433,6 +1433,7 @@ public:
           {
               if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_IMPROVED_CLEANSE_SPIRIT))
               return false;
+			return true;
           }
 
           void HandleDummy(SpellEffIndex /*effIndex*/)
@@ -1603,4 +1604,7 @@ void AddSC_shaman_spell_scripts()
     new spell_sha_healing_rain();
     new spell_sha_frozen_power();
     new spell_sha_searing_bolt();
+	new spell_sha_unleash_elements();
+	new spell_sha_cleansing_waters();
+	new spell_sha_earthquake();
 }
