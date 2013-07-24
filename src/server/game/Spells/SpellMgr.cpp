@@ -2226,8 +2226,8 @@ void SpellMgr::LoadSpellLinked()
 
     mSpellLinkedMap.clear();    // need for reload case
 
-    //                                                0              1             2        3
-    QueryResult result = WorldDatabase.Query("SELECT spell_trigger, spell_effect, type, req_aura FROM spell_linked_spell");
+    //                                                0              1             2
+    QueryResult result = WorldDatabase.Query("SELECT spell_trigger, spell_effect, type FROM spell_linked_spell");
     if (!result)
     {
         TC_LOG_INFO(LOG_FILTER_SERVER_LOADING, ">> Loaded 0 linked spells. DB table `spell_linked_spell` is empty.");
