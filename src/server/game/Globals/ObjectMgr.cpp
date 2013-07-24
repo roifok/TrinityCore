@@ -4850,6 +4850,11 @@ void ObjectMgr::LoadSpellScriptNames()
                 TC_LOG_ERROR(LOG_FILTER_SQL, "Scriptname:`%s` spell (spell_id:%d) is not first rank of spell.", scriptName, fields[0].GetInt32());
                 continue;
             }
+            if (!sSpellMgr->GetNextSpellInChain(spellId))
+            {
+                TC_LOG_ERROR(LOG_FILTER_SQL, "Scriptname:`%s` spell (spell_id:%d) has no ranks of spell.", scriptName, fields[0].GetInt32());
+                continue;
+            }
             while (spellInfo)
             {
                 _spellScriptsStore.insert(SpellScriptsContainer::value_type(spellInfo->Id, GetScriptId(scriptName)));
@@ -8375,15 +8380,6 @@ bool ObjectMgr::IsVendorItemValid(uint32 vendor_entry, uint32 id, int32 maxcount
             ChatHandler(player->GetSession()).PSendSysMessage(LANG_ITEM_ALREADY_IN_LIST, id, ExtendedCost, type);
         else
             TC_LOG_ERROR(LOG_FILTER_SQL, "Table `npc_vendor` has duplicate items %u (with extended cost %u, type %u) for vendor (Entry: %u), ignoring", id, ExtendedCost, type, vendor_entry);
-        return false;
-    }
-
-    if (vItems->GetItemCount() >= MAX_VENDOR_ITEMS) // FIXME: GetItemCount range 0...255 MAX_VENDOR_ITEMS = 300
-    {
-        if (player)
-            ChatHandler(player->GetSession()).SendSysMessage(LANG_COMMAND_ADDVENDORITEMITEMS);
-        else
-            TC_LOG_ERROR(LOG_FILTER_SQL, "Table `npc_vendor` has too many items (%u >= %i) for vendor (Entry: %u), ignore", vItems->GetItemCount(), MAX_VENDOR_ITEMS, vendor_entry);
         return false;
     }
 
