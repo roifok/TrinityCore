@@ -1185,8 +1185,8 @@ void SpellMgr::LoadSpellRanks()
         mSpellInfoMap[itr->first]->ChainEntry = NULL;
     }
     mSpellChains.clear();
-    //                                                     0             1      2
-    QueryResult result = WorldDatabase.Query("SELECT first_spell_id, spell_id, rank from spell_ranks ORDER BY first_spell_id, rank");
+	//                                                0              1             2
+    QueryResult result = WorldDatabase.Query("SELECT spell_trigger, spell_effect, type FROM spell_linked_spell");
 
     if (!result)
     {
@@ -2242,7 +2242,6 @@ void SpellMgr::LoadSpellLinked()
         int32 trigger = fields[0].GetInt32();
         int32 effect = fields[1].GetInt32();
         int32 type = fields[2].GetUInt8();
-        int32 req_aura = fields[3].GetUInt32();
 
         SpellInfo const* spellInfo = GetSpellInfo(abs(trigger));
         if (!spellInfo)
@@ -2254,12 +2253,6 @@ void SpellMgr::LoadSpellLinked()
         if (!spellInfo)
         {
             TC_LOG_ERROR(LOG_FILTER_SQL, "Spell %u listed in `spell_linked_spell` does not exist", abs(effect));
-            continue;
-        }
-
-        if (req_aura != 0 && !sSpellStore.LookupEntry(req_aura))
-        {
-            sLog->outError(LOG_FILTER_SQL, "Aura %u listed in `spell_linked_spell` does not exist", req_aura);
             continue;
         }
 
