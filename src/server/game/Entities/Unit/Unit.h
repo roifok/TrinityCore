@@ -2145,7 +2145,7 @@ class Unit : public WorldObject
         void ReleaseFocus(Spell const* focusSpell);
 
 		 // Functions GetDamageDoneInPastSecs & GetHealingDoneInPastSecs
-		 uint32 m_heal_done[120];
+        uint32 m_heal_done[120];
         uint32 m_damage_done[120];
         uint32 m_damage_taken[120];
         int32 DmgandHealDoneTimer;
