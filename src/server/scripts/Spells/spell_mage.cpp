@@ -474,8 +474,7 @@ class spell_mage_conjure_refreshment : public SpellScriptLoader
         }
 };
 
-// -543  - Fire Ward
-// -6143 - Frost Ward
+// 543  - Fire War
 class spell_mage_fire_frost_ward : public SpellScriptLoader
 {
     public:
@@ -487,9 +486,8 @@ class spell_mage_fire_frost_ward : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_MAGE_FROST_WARDING_TRIGGERED))
-                    return false;
-                if (!sSpellMgr->GetSpellInfo(SPELL_MAGE_FROST_WARDING_R1))
+                if (!sSpellMgr->GetSpellInfo(SPELL_MAGE_FROST_WARDING_TRIGGERED) ||
+                    !sSpellMgr->GetSpellInfo(SPELL_MAGE_FROST_WARDING_R1))
                     return false;
                 return true;
             }
@@ -754,7 +752,7 @@ class spell_mage_glyph_of_polymorph : public SpellScriptLoader
         }
 };
 
-// -44457 - Living Bomb
+// 44457 - Living Bomb
 class spell_mage_living_bomb : public SpellScriptLoader
 {
     public:
