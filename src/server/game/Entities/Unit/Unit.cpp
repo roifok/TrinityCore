@@ -332,25 +332,24 @@ void Unit::Update(uint32 p_time)
     if (!IsInWorld())
         return;
 
-    // This is required for GetHealingDoneInPastSecs(), GetDamageDoneInPastSecs() and GetDamageTakenInPastSecs()!
+    // This is required for GetHealingDoneInPastSecs() and GetDamageDoneInPastSecs() 
     DmgandHealDoneTimer -= p_time;
 
     if (DmgandHealDoneTimer <= 0)
     {
-        for (uint32 i = 120; i > 0; i--)
-            m_damage_done[i] = m_damage_done[i-1];
-            
+        for (uint32 i = 121; i > 0; i--)
+        {
+            int32 x = int32(i-1);
+            m_damage_done[i] = m_damage_done[x];
+        }
         m_damage_done[0] = 0;
 
-        for (uint32 i = 120; i > 0; i--)
-            m_heal_done[i] = m_heal_done[i-1];
-
+        for (uint32 i = 121; i > 0; i--)
+        {
+            int32 x = int32(i-1);
+            m_heal_done[i] = m_heal_done[x];
+        }
         m_heal_done[0] = 0;
-
-        for (uint32 i = 120; i > 0; i--)
-            m_damage_taken[i] = m_damage_taken[i-1];
-
-        m_damage_taken[0] = 0;
 
         DmgandHealDoneTimer = 1000;
     }
@@ -377,16 +376,7 @@ void Unit::Update(uint32 p_time)
                 ClearInCombat();
             else
                 m_CombatTimer -= p_time;
-        }
-		if (GetDamageTakenInPastSecs(20) == 0 && GetDamageDoneInPastSecs(20) == 0 && GetHealingDoneInPastSecs(20) == 0)
-        {
-            ClearInCombat();
-            getHostileRefManager().deleteReferences();
-            SendThreatListUpdate();
-            ResetDamageTakenInPastSecs(120);
-            ResetDamageDoneInPastSecs(120);
-            ResetHealingDoneInPastSecs(120);
-        }
+        }		
     }
 
     // not implemented before 3.0.2
@@ -612,12 +602,6 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
 
     if (IsAIEnabled)
         GetAI()->DamageDealt(victim, damage, damagetype);
-
-	if (damagetype == DIRECT_DAMAGE || damagetype == SPELL_DIRECT_DAMAGE)
-        m_damage_done[0] += damage;
-
-    if (damagetype == HEAL)
-        m_heal_done[0] += damage;
 
     if (victim->GetTypeId() == TYPEID_PLAYER && this != victim)
     {
@@ -16630,6 +16614,81 @@ void Unit::ReleaseFocus(Spell const* focusSpell)
         ClearUnitState(UNIT_STATE_ROTATING);
 }
 
+uint32 Unit::GetHealingDoneInPastSecs(uint32 secs)
+{
+    uint32 heal = 0;
+
+    if (secs > 120)
+        secs = 120;
+
+    for (uint32 i = 0; i < secs; i++)
+        heal += m_heal_done[i];
+
+    if (heal < 0)
+        return 0;
+
+    return heal;
+};
+
+uint32 Unit::GetDamageDoneInPastSecs(uint32 secs)
+{
+    uint32 damage = 0;
+
+    if (secs > 120)
+        secs = 120;
+
+    for (uint32 i = 0; i < secs; i++)
+        damage += m_damage_done[i];
+
+    if (damage < 0)
+        return 0;
+
+    return damage;
+};
+
+uint32 Unit::GetDamageTakenInPastSecs(uint32 secs)
+{
+    uint32 tdamage = 0;
+
+    if (secs > 120)
+        secs = 120;
+
+    for (uint32 i = 0; i < secs; i++)
+        tdamage += m_damage_taken[i];
+
+    if (tdamage < 0)
+        return 0;
+
+    return tdamage;
+};
+
+void Unit::ResetDamageDoneInPastSecs(uint32 secs)
+{
+    if (secs > 120)
+        secs = 120;
+
+    for (uint32 i = 0; i < secs; i++)
+        m_damage_done[i] = 0;
+};
+
+void Unit::ResetDamageTakenInPastSecs(uint32 secs)
+{
+    if (secs > 120)
+        secs = 120;
+
+    for (uint32 i = 0; i < secs ; ++i)
+        m_damage_taken[i] = 0;
+};
+
+void Unit::ResetHealingDoneInPastSecs(uint32 secs)
+{
+    if (secs > 120)
+        secs = 120;
+
+    for (uint32 i = 0; i < secs; i++)
+        m_heal_done[i] = 0;
+};
+
 void Unit::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target) const
 {
     if (!target)
@@ -16807,78 +16866,3 @@ void Unit::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target)
     updateMask.AppendToPacket(data);
     data->append(fieldBuffer);
 }
-
-uint32 Unit::GetHealingDoneInPastSecs(uint32 secs)
-{
-    uint32 heal = 0;
-
-    if (secs > 120)
-        secs = 120;
-
-    for (uint32 i = 0; i < secs; i++)
-        heal += m_heal_done[i];
-
-    if (heal < 0)
-        return 0;
-
-    return heal;
-};
-
-uint32 Unit::GetDamageDoneInPastSecs(uint32 secs)
-{
-    uint32 damage = 0;
-
-    if (secs > 120)
-        secs = 120;
-
-    for (uint32 i = 0; i < secs; i++)
-        damage += m_damage_done[i];
-
-    if (damage < 0)
-        return 0;
-
-    return damage;
-};
-
-uint32 Unit::GetDamageTakenInPastSecs(uint32 secs)
-{
-    uint32 tdamage = 0;
-
-    if (secs > 120)
-        secs = 120;
-
-    for (uint32 i = 0; i < secs; i++)
-        tdamage += m_damage_taken[i];
-
-    if (tdamage < 0)
-        return 0;
-
-    return tdamage;
-};
-
-void Unit::ResetDamageDoneInPastSecs(uint32 secs)
-{
-    if (secs > 120)
-        secs = 120;
-
-    for (uint32 i = 0; i < secs; i++)
-        m_damage_done[i] = 0;
-};
-
-void Unit::ResetDamageTakenInPastSecs(uint32 secs)
-{
-    if (secs > 120)
-        secs = 120;
-
-    for (uint32 i = 0; i < secs ; ++i)
-        m_damage_taken[i] = 0;
-};
-
-void Unit::ResetHealingDoneInPastSecs(uint32 secs)
-{
-    if (secs > 120)
-        secs = 120;
-
-    for (uint32 i = 0; i < secs; i++)
-        m_heal_done[i] = 0;
-};

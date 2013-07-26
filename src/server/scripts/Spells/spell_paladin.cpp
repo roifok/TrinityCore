@@ -555,6 +555,28 @@ class spell_pal_holy_shock : public SpellScriptLoader
                     if (caster->IsFriendlyTo(unitTarget))
                         caster->CastSpell(unitTarget, sSpellMgr->GetSpellWithRank(SPELL_PALADIN_HOLY_SHOCK_R1_HEALING, rank), true);
                     				
+					if (caster->ToPlayer()->HasAuraType(SPELL_AURA_MASTERY))
+                    {
+                         if (caster->ToPlayer()->getClass() == CLASS_PALADIN)
+                         {
+                             if (caster->ToPlayer()->GetPrimaryTalentTree(caster->ToPlayer()->GetActiveSpec()) == TALENT_TREE_PALADIN_HOLY)
+                             {
+                                 int32 bp0 = int32(caster->GetHealingDoneInPastSecs(15) * (12.0f + (1.5f * caster->ToPlayer()->GetFloatValue(PLAYER_MASTERY))) /100);
+                                 int32 bp1 = int32(caster->ToPlayer()->GetMaxHealth()/3);
+
+                                 if (bp0 > bp1)
+								 {
+						            caster->ResetHealingDoneInPastSecs(120);
+                                    caster->CastCustomSpell(caster, 86273, &bp1, NULL, NULL, true);  
+								 }
+								 else  
+						            caster->ResetHealingDoneInPastSecs(120);
+                                    caster->CastCustomSpell(caster, 86273, &bp0, NULL, NULL, true);                
+                    
+                             }
+                         }
+                    }
+					
 					else
                         caster->CastSpell(unitTarget, sSpellMgr->GetSpellWithRank(SPELL_PALADIN_HOLY_SHOCK_R1_DAMAGE, rank), true);
                 }
