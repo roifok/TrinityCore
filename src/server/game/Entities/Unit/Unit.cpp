@@ -6430,20 +6430,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 break;                
               }
             }
-            // Frozen Power
-            if (dummySpell->SpellIconID == 3780)
-            {
-                if (!target)
-                    return false;
-                if (GetDistance(target) < 15.0f)
-                    return false;
-                float chance = (float)triggerAmount;
-                if (!roll_chance_f(chance))
-                    return false;
-
-                triggered_spell_id = 63685;
-                break;
-            }
 			// Storm, Earth and Fire
             if (dummySpell->SpellIconID == 3063)
             {
@@ -6505,23 +6491,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 CastCustomSpell(victim, triggered_spell_id, &basepoints0, NULL, NULL, true, castItem, triggeredByAura);
                 return true;
             }
-        // Static Shock
-        case 51525: 
-        case 51526:
-        case 51527:
-        {
-            // Lightning Shield
-            if (AuraEffect const * aurEff = GetAuraEffect(SPELL_AURA_PROC_TRIGGER_SPELL, SPELLFAMILY_SHAMAN, 0x400, 0, 0))
-            {
-            uint32 spell = sSpellMgr->GetSpellWithRank(26364, sSpellMgr->GetSpellRank(aurEff->GetId()));
-
-            // custom cooldown processing case
-            if (GetTypeId() == TYPEID_PLAYER && ToPlayer()->HasSpellCooldown(spell)) 
-            ToPlayer()->RemoveSpellCooldown(spell);
-
-            CastSpell(target, spell, true, castItem, triggeredByAura);
-            }
-        }
         break;
         }
         case SPELLFAMILY_DEATHKNIGHT:
@@ -9256,7 +9225,7 @@ bool Unit::isSpellCrit(Unit* victim, SpellInfo const* spellProto, SpellSchoolMas
                         if (spellProto->SpellFamilyFlags[0] & 0x40000000)
                         {
                             // Sacred Shield
-                            if (AuraEffect const* aura = victim->GetAuraEffect(58597, 1, GetGUID()))
+                            if (AuraEffect const* aura = victim->GetAuraEffect(96263, 1, GetGUID()))
                                 crit_chance += aura->GetAmount();
                             break;
                         }

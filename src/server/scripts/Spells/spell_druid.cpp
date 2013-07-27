@@ -55,8 +55,6 @@ enum DruidSpells
     SPELL_DRUID_LIVING_SEED_PROC            = 48504,
     SPELL_DRUID_SURVIVAL_INSTINCTS          = 50322,
     SPELL_DRUID_SAVAGE_ROAR                 = 62071,
-    SPELL_DRUID_TIGER_S_FURY_ENERGIZE       = 51178,
-    SPELL_DRUID_ITEM_T8_BALANCE_RELIC       = 64950,
     SPELL_DRUID_INSTANT_REJUVENATION        = 64801,
     SPELL_DRUID_NPC_WILD_MUSHROOM           = 47649,
     SPELL_DRUID_NPC_FUNGAL_GROWTH_1         = 43497,
@@ -1395,7 +1393,7 @@ class spell_druid_rejuvenation : public SpellScriptLoader
                 return true;
             }
 
-            bool Load()
+            bool Load() OVERRIDE
             {
                 return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER;
             }
