@@ -55,7 +55,6 @@ enum DruidSpells
     SPELL_DRUID_LIVING_SEED_PROC            = 48504,
     SPELL_DRUID_SURVIVAL_INSTINCTS          = 50322,
     SPELL_DRUID_SAVAGE_ROAR                 = 62071,
-<<<<<<< HEAD
     SPELL_DRUID_TIGER_S_FURY_ENERGIZE       = 51178,
     SPELL_DRUID_ITEM_T8_BALANCE_RELIC       = 64950,
     SPELL_DRUID_INSTANT_REJUVENATION        = 64801,
@@ -72,13 +71,11 @@ enum DruidSpells
 
 enum DruidSpellIcons
 {
-    DRUID_ICON_ID_GIFT_OF_THE_EARTHMOTHER_TALENT	= 3186,
-=======
+    SPELL_DRUID_GIFT_OF_THE_EARTHMOTHER_TALENT	= 3186,
     SPELL_DRUID_STAMPEDE_BAER_RANK_1        = 81016,
     SPELL_DRUID_STAMPEDE_CAT_RANK_1         = 81021,
     SPELL_DRUID_STAMPEDE_CAT_STATE          = 109881,
     SPELL_DRUID_TIGER_S_FURY_ENERGIZE       = 51178
->>>>>>> trinitycore/4.3.4
 };
 
 // 2912, 5176, 78674 - Starfire, Wrath, and Starsurge
@@ -1409,7 +1406,7 @@ class spell_druid_rejuvenation : public SpellScriptLoader
                 {
                     PreventDefaultAction();
                     // Gift of the Earthmother
-                    if (AuraEffect const* empoweredRenewAurEff = caster->GetDummyAuraEffect(SPELLFAMILY_DRUID, DRUID_ICON_ID_GIFT_OF_THE_EARTHMOTHER_TALENT, EFFECT_0))
+                    if (AuraEffect const* empoweredRenewAurEff = caster->GetDummyAuraEffect(SPELLFAMILY_DRUID, SPELL_DRUID_GIFT_OF_THE_EARTHMOTHER_TALENT, EFFECT_0))
                     {
                         uint32 heal = caster->SpellHealingBonusDone(GetTarget(), GetSpellInfo(), aurEff->GetAmount(), DOT);
                         heal = GetTarget()->SpellHealingBonusTaken(caster, GetSpellInfo(), heal, DOT);
