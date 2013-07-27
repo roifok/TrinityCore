@@ -7977,9 +7977,9 @@ void Player::DuelComplete(DuelCompleteType type)
     if (type != DUEL_INTERRUPTED)
     {
         data.Initialize(SMSG_DUEL_WINNER, (1+20));          // we guess size
-        data << uint8(type == DUEL_WON ? 0 : 1);            // 0 = just won; 1 = fled
-        data << duel->opponent->GetName();
+        data << uint8(type == DUEL_WON ? 0 : 1);           // 0 = just won; 1 = fled        
         data << GetName();
+        data << duel->opponent->GetName();
         SendMessageToSet(&data, true);
     }
 
