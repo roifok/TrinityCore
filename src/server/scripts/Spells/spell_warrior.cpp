@@ -59,7 +59,11 @@ enum WarriorSpells
     SPELL_WARRIOR_UNRELENTING_ASSAULT_TRIGGER_1     = 64849,
     SPELL_WARRIOR_UNRELENTING_ASSAULT_TRIGGER_2     = 64850,
     SPELL_WARRIOR_VIGILANCE_PROC                    = 50725,
-    SPELL_WARRIOR_VENGEANCE                         = 76691
+    SPELL_WARRIOR_VENGEANCE                         = 76691,
+    SPELL_WARRIOR_SPELL_HEROIC_LEAP                 = 6544,
+    SPELL_WARRIOR_IMPROVED_HAMSTRING_R2             = 12668,
+    SPELL_WARRIOR_IMPROVED_HAMSTRING_R1             = 12289,
+    SPELL_WARRIOR_HAMSTRING                         = 1715,
 };
 
 enum WarriorSpellIcons
@@ -848,6 +852,56 @@ class spell_warr_sudden_death : public SpellScriptLoader
         }
 };
 
+// 12289, 12669 - Improved Hamstring
+class spell_warr_improved_hamstring : public SpellScriptLoader
+{
+    public:
+        spell_warr_improved_hamstring() : SpellScriptLoader("spell_warr_improved_hamstring") { }
+
+        class spell_warr_improved_hamstring_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_warr_improved_hamstring_SpellScript);
+
+            bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
+            {
+                if (!sSpellMgr->GetSpellInfo(SPELL_WARRIOR_IMPROVED_HAMSTRING_R1 || SPELL_WARRIOR_IMPROVED_HAMSTRING_R2))
+                    return false;
+                return true;
+            }
+
+            void HandleOnHit()
+            {   
+				if (Aura* aur = GetHitUnit()->GetAura(SPELL_WARRIOR_HAMSTRING, GetCaster()->GetGUID()))                    
+				{
+				    if(GetCaster()->HasAura(SPELL_WARRIOR_IMPROVED_HAMSTRING_R1)) // Improved Hamstring rank 1
+				    {
+					    GetCaster()->CastSpell(GetHitUnit(),23694,false);
+					    if(!GetCaster()->ToPlayer()->HasSpellCooldown(23694))
+					        GetCaster()->ToPlayer()->AddSpellCooldown(23694,0,uint32(time(NULL) + 30)); // Add 30 seconds cooldown
+					}
+				    if(GetCaster()->HasAura(SPELL_WARRIOR_IMPROVED_HAMSTRING_R2)) // Improved Hamstring rank 2
+				    {
+					    GetCaster()->CastSpell(GetHitUnit(),23694,false);
+					    if(!GetCaster()->ToPlayer()->HasSpellCooldown(23694))
+					        GetCaster()->ToPlayer()->AddSpellCooldown(23694,0,uint32(time(NULL) + 30)); // Add 30 seconds cooldown
+					}
+				}
+				else
+                    GetCaster()->CastSpell(GetHitUnit(),SPELL_WARRIOR_HAMSTRING,false);
+            }
+		
+            void Register() OVERRIDE
+            {
+                OnHit += SpellHitFn(spell_warr_improved_hamstring_SpellScript::HandleOnHit); // correct?
+            }
+        };
+
+        SpellScript* GetSpellScript() const OVERRIDE
+        {
+            return new spell_warr_improved_hamstring_SpellScript();
+        }
+};
+
 // 12328, 18765, 35429 - Sweeping Strikes
 class spell_warr_sweeping_strikes : public SpellScriptLoader
 {
@@ -1059,6 +1113,130 @@ class spell_warr_vigilance_trigger : public SpellScriptLoader
         }
 };
 
+// Heroic leap 6544
+class spell_warr_heroic_leap : public SpellScriptLoader
+{
+    public:
+        spell_warr_heroic_leap() : SpellScriptLoader("spell_warr_heroic_leap") { }
+
+        class spell_warr_heroic_leap_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_warr_heroic_leap_SpellScript)
+
+            bool Validate(SpellInfo const* /*spellInfo*/)
+            {
+                if (!sSpellMgr->GetSpellInfo(SPELL_WARRIOR_SPELL_HEROIC_LEAP))
+                    return false;
+                return true;
+            }
+
+            bool Load()
+            {
+                if (!GetCaster())
+                    return false;
+
+                return true;
+            }
+            SpellCastResult CheckElevation()
+            {
+                Unit* caster = GetCaster();
+                WorldLocation const* const dest = GetExplTargetDest();
+
+                if (dest->GetPositionZ() > caster->GetPositionZ() + 5.0f) // Cant jump to higher ground
+                    return SPELL_FAILED_NOPATH;
+                return SPELL_CAST_OK;
+            }
+
+            void Register()
+            {
+                OnCheckCast += SpellCheckCastFn(spell_warr_heroic_leap_SpellScript::CheckElevation);
+            }
+        };
+
+        SpellScript *GetSpellScript() const
+        {
+            return new spell_warr_heroic_leap_SpellScript();
+        }
+};
+
+// Thunder Clap - 6343
+class spell_warr_thunderclap : public SpellScriptLoader
+{
+public:
+    spell_warr_thunderclap() : SpellScriptLoader("spell_warr_thunderclap") { }
+
+    class spell_warr_thunderclap_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_warr_thunderclap_SpellScript);
+
+        // Lock for avoid processing the same thing multiple times when we already know the result
+        bool CheckAgain;
+        std::list<WorldObject*> targetList;
+
+        bool Load()
+        {
+            CheckAgain = true;
+            return true;
+        }
+
+        void FilterTargets(std::list<WorldObject*>& unitList)
+        {
+            targetList = unitList;
+        }
+
+            void OnCastHandler()
+            {
+                if (Unit* caster = GetCaster())
+				{
+                    if(caster->HasAura(80979)) // Thunderstruck rank1
+                        caster->AddAura(87095,caster);
+                    if(caster->HasAura(80980)) // Thunderstruck rank2
+                        caster->AddAura(87096,caster);
+                }
+            }
+
+            void OnTargetHit(SpellEffIndex effect)
+            {
+                if (CheckAgain) // Dont re-cast the thing on each target if its already applied
+                {
+                    // Check for Blood and Thunder
+                    if (Unit* caster = GetCaster())
+                    {
+                        // Blood and Thunder rank 1 & 2
+                        if (AuraEffect const * aurEff = caster->GetDummyAuraEffect(SPELLFAMILY_WARRIOR, 5057, 0))
+                        {
+                            if (roll_chance_i(aurEff->GetAmount()))
+                            {
+                                if (Unit* target = GetHitUnit())
+                                {
+                                    if (target->HasAura(94009, caster->GetGUID())) // If the target has Rend
+                                    {
+                                        CheckAgain = false;
+                                        for (std::list<WorldObject*>::iterator itr = targetList.begin(); itr != targetList.end(); ++itr)
+                                                                                        if (Unit* curTrg = (*itr)->ToUnit())
+                                                caster->CastSpell(curTrg, 94009, true);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        void Register()
+        {
+            OnEffectHitTarget += SpellEffectFn(spell_warr_thunderclap::spell_warr_thunderclap_SpellScript::OnTargetHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+            OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_warr_thunderclap::spell_warr_thunderclap_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
+            OnCast += SpellCastFn(spell_warr_thunderclap::spell_warr_thunderclap_SpellScript::OnCastHandler);
+        }
+    };
+
+    SpellScript* GetSpellScript() const
+    {
+        return new spell_warr_thunderclap_SpellScript();
+    }
+};
+
 void AddSC_warrior_spell_scripts()
 {
     new spell_warr_bloodthirst();
@@ -1086,4 +1264,7 @@ void AddSC_warrior_spell_scripts()
     new spell_warr_victorious();
     new spell_warr_vigilance();
     new spell_warr_vigilance_trigger();
+    new spell_warr_heroic_leap();
+    new spell_warr_thunderclap();
+    new spell_warr_improved_hamstring();
 }

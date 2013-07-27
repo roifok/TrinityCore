@@ -1199,6 +1199,22 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                         break;
                 }
                 break;
+            case SPELLFAMILY_WARRIOR:
+				{
+					if (!caster)
+						break;
+
+					switch (GetId())
+					{
+					case 50227: // Warrior - Sword and Board
+						{
+							// Reset cooldown on shield slam if needed
+							caster->ToPlayer()->RemoveSpellCooldown(23922, true);
+							break;
+						}
+					}
+					break;
+				}
             case SPELLFAMILY_DRUID:
                 if (!caster)
                     break;
