@@ -1147,7 +1147,6 @@ public:
 
         void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
-            PreventDefaultAction();
             // Apply UI Visual when at 5 stack
             if (Unit* petOwner = GetUnitOwner()->GetOwner())
             {
@@ -1158,7 +1157,6 @@ public:
 
         void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
         {
-			PreventDefaultAction();
             if (Unit* pet = GetUnitOwner())
             {
                 if (Unit * petOwner = pet->GetOwner())

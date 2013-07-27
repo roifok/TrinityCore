@@ -5375,7 +5375,14 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster) const
                     target->SetPower(POWER_RAGE, rage-mod);
                     break;
                 }                
-            }
+                case 81262: // Efflorescence
+                    if(GetEffIndex() == 0)
+					{
+						int32 bp = GetAmount();
+						caster->CastCustomSpell(target,81269,&bp,NULL,NULL,true);
+					}
+					break;
+			}
             break;
         }
         case SPELLFAMILY_ROGUE:

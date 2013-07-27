@@ -332,24 +332,25 @@ void Unit::Update(uint32 p_time)
     if (!IsInWorld())
         return;
 
-    // This is required for GetHealingDoneInPastSecs() and GetDamageDoneInPastSecs() 
+    // This is required for GetHealingDoneInPastSecs(), GetDamageDoneInPastSecs() and GetDamageTakenInPastSecs()!
     DmgandHealDoneTimer -= p_time;
 
     if (DmgandHealDoneTimer <= 0)
     {
-        for (uint32 i = 121; i > 0; i--)
-        {
-            int32 x = int32(i-1);
-            m_damage_done[i] = m_damage_done[x];
-        }
+        for (uint32 i = 120; i > 0; i--)
+            m_damage_done[i] = m_damage_done[i-1];
+            
         m_damage_done[0] = 0;
 
-        for (uint32 i = 121; i > 0; i--)
-        {
-            int32 x = int32(i-1);
-            m_heal_done[i] = m_heal_done[x];
-        }
+        for (uint32 i = 120; i > 0; i--)
+            m_heal_done[i] = m_heal_done[i-1];
+
         m_heal_done[0] = 0;
+
+        for (uint32 i = 120; i > 0; i--)
+            m_damage_taken[i] = m_damage_taken[i-1];
+
+        m_damage_taken[0] = 0;
 
         DmgandHealDoneTimer = 1000;
     }
@@ -602,6 +603,12 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
 
     if (IsAIEnabled)
         GetAI()->DamageDealt(victim, damage, damagetype);
+
+    if (damagetype == DIRECT_DAMAGE || damagetype == SPELL_DIRECT_DAMAGE)
+    {
+        m_damage_done[0] += damage;
+        victim->m_damage_taken[0] += damage;
+     }
 
     if (victim->GetTypeId() == TYPEID_PLAYER && this != victim)
     {
@@ -7202,15 +7209,6 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
     // Custom triggered spells
     switch (auraSpellInfo->Id)
     {
-		// Lambs of the slaughter
-        case 84583:
-        case 84587:
-        case 84588:
-        {
-            if (victim->HasAura(94009, GetGUID()))
-            victim->GetAura(94009, GetGUID())->RefreshDuration();
-            break;
-        }
         // Deep Wounds
         case 12834:
         case 12849:
@@ -7438,14 +7436,6 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
         case 62606:
         {
             basepoints0 = CalculatePct(triggerAmount, GetTotalAttackPowerValue(BASE_ATTACK));
-            break;
-        }
-        // Efflorescence
-        case 34151:
-        case 81274:
-        case 81275:
-        {
-        basepoints0 = CalculatePct(int32(damage), triggerAmount);
             break;
         }
         // Culling the Herd
@@ -8451,6 +8441,8 @@ int32 Unit::DealHeal(Unit* victim, uint32 addhealth)
         gain = victim->ModifyHealth(int32(addhealth));
 
     Unit* unit = this;
+
+    m_heal_done[0] += addhealth;
 
     if (GetTypeId() == TYPEID_UNIT && ToCreature()->IsTotem())
         unit = GetOwner();
