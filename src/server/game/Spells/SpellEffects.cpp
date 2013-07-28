@@ -542,6 +542,37 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                 }
                 break;
             }
+
+			case SPELLFAMILY_PALADIN:
+            {
+                switch(m_spellInfo->Id)
+                {
+                    case 31803: // Seal of Truth - Inquiry of Faith
+                    {
+                        if (AuraEffect * aurEff = m_caster->GetAuraEffect(SPELL_AURA_ADD_PCT_MODIFIER, SPELLFAMILY_PALADIN, 3025, 0))
+                            damage += damage * (aurEff->GetAmount() / 1000);
+                    }
+                    case 2812: // Holy Wrath
+                    {
+                        if (unitTarget->GetCreatureType() != CREATURE_TYPE_DEMON
+                            && unitTarget->GetCreatureType() != CREATURE_TYPE_UNDEAD)
+                                return;
+                        break;
+                    }                    
+                    break;
+                }
+                // Hammer of the Righteous
+                if (m_spellInfo->SpellFamilyFlags[1]&0x00040000)
+                {
+                    // Add main hand dps * effect[2] amount
+                    float average = (m_caster->GetFloatValue(UNIT_FIELD_MINDAMAGE) + m_caster->GetFloatValue(UNIT_FIELD_MAXDAMAGE)) / 2;
+                    int32 count = m_caster->CalculateSpellDamage(unitTarget, m_spellInfo, EFFECT_2);
+                    damage += count * int32(average * IN_MILLISECONDS) / m_caster->GetAttackTime(BASE_ATTACK);
+                    break;
+                }
+                break;
+            }
+
             case SPELLFAMILY_DEATHKNIGHT:
             {
                 // Blood Boil - bonus for diseased targets
@@ -1729,7 +1760,6 @@ void Spell::EffectEnergize(SpellEffIndex effIndex)
             level_diff = m_caster->getLevel() - 60;
             level_multiplier = 4;
             break;
-        case 31930:                                         // Judgements of the Wise
         case 63375:                                         // Primal Wisdom
         case 68082:                                         // Glyph of Seal of Command
             damage = int32(CalculatePct(unitTarget->GetCreateMana(), damage));

@@ -4778,6 +4778,11 @@ void Spell::HandleHolyPower(Player* caster)
             m_caster->ModifyPower(POWER_HOLY_POWER, -m_powerCost);
         }
     }
+    else if (m_spellInfo->Id == 84963 || m_spellInfo->Id == 85222)  // Inquisition and Light of Dawn didn't have target
+    {
+        modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_COST, m_powerCost);
+        m_caster->ModifyPower(POWER_HOLY_POWER, -m_powerCost);
+    }
 }
 
 void Spell::HandleEffects(Unit* pUnitTarget, Item* pItemTarget, GameObject* pGOTarget, uint32 i, SpellEffectHandleMode mode)

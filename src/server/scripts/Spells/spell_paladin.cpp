@@ -57,6 +57,13 @@ enum PaladinSpells
     SPELL_PALADIN_RETRI_GUARDIAN                 = 86698,
     SPELL_PALADIN_HOLY_GUARDIAN                  = 86669,
     SPELL_PALADIN_PROT_GUARDIAN                  = 86659,
+    SPELL_PALADIN_SPEED_OF_LIGHT_BUFF            = 85497,
+    SPELL_PALADIN_AVENGER_S_SHIELD               = 31935,
+    SPELL_PALADIN_JUDG_BOLD_OVERTIME             = 89906,
+    SPELL_PALADIN_INQUISITION                    = 84963,
+    SPELL_PALADIN_SEAL_OF_JUSTICE                = 20164,
+    SPELL_PALADIN_SEAL_OF_INSIGHT                = 20165,
+    SPELL_PALADIN_JUDGEMENT_DAMAGE               = 54158,
 };
 
 enum MiscSpells
@@ -925,14 +932,14 @@ public:
     {
         PrepareSpellScript(spell_pal_guardian_ancient_kings_SpellScript)
 
-        bool Load()
+        bool Load() OVERRIDE
         {
             if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
                 return false;
             return true;
         }
 
-        bool Validate (SpellInfo const* /*spellEntry*/)
+        bool Validate (SpellInfo const* /*spellEntry*/) OVERRIDE
         {
             if (!sSpellMgr->GetSpellInfo(SPELL_PALADIN_GUARDIAN_ANCIENT_KINGS))
                 return false;
@@ -962,17 +969,310 @@ public:
             }
         }
 
-        void Register()
+        void Register() OVERRIDE
         {
             OnEffectLaunch += SpellEffectFn(spell_pal_guardian_ancient_kings_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
         }
     };
 
-    SpellScript* GetSpellScript() const
+    SpellScript* GetSpellScript() const OVERRIDE
     {
         return new spell_pal_guardian_ancient_kings_SpellScript();
     }
 };
+
+// 85495,85498,85499 - Speed of Light
+/// Updated 4.3.4
+class spell_pal_speed_of_light : public SpellScriptLoader
+{
+    public:
+        spell_pal_speed_of_light() : SpellScriptLoader("spell_pal_speed_of_light") { }
+
+        class spell_pal_speed_of_light_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_pal_speed_of_light_AuraScript);
+
+            bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
+            {
+                if (!sSpellMgr->GetSpellInfo(SPELL_PALADIN_SPEED_OF_LIGHT_BUFF))
+                    return false;
+                return true;
+            }
+
+            void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+            {
+                PreventDefaultAction();
+                if (Unit* caster = GetCaster())
+                    caster->CastCustomSpell(SPELL_PALADIN_SPEED_OF_LIGHT_BUFF, SPELLVALUE_BASE_POINT0, aurEff->GetAmount(), caster);
+            }
+
+            void Register() OVERRIDE
+            {
+                OnEffectProc += AuraEffectProcFn(spell_pal_speed_of_light_AuraScript::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
+            }
+        };
+
+        AuraScript* GetAuraScript() const OVERRIDE
+        {
+            return new spell_pal_speed_of_light_AuraScript();
+        }
+};
+
+// 53600 - Shield of the Righteous
+class spell_pal_shield_of_the_righteous : public SpellScriptLoader
+{
+    public:
+        spell_pal_shield_of_the_righteous() : SpellScriptLoader("spell_pal_shield_of_the_righteous") { }
+
+        class spell_pal_shield_of_the_righteous_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_pal_shield_of_the_righteous_SpellScript);
+
+            bool Load() OVERRIDE
+            {
+                if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
+                    return false;
+
+                if (GetCaster()->ToPlayer()->getClass() != CLASS_PALADIN)
+                    return false;
+
+                return true;
+            }
+
+            void ChangeDamage(SpellEffIndex /*effIndex*/)
+            {
+                int32 damage = GetHitDamage();
+
+                // Because 1 Holy Power (HP) is consumed when casting spell,
+                // GetPower(POWER_HOLY_POWER) will return 0 when player has 1 HP,
+                // return 1 at 2 HP, and 2 at 3 HP
+                int32 hp = GetCaster()->GetPower(POWER_HOLY_POWER);
+
+                // Holy Power Scaling: 3 times damage at 2 HP, 6 times at 3 HP
+                damage *= 0.5*hp*hp + 1.5*hp + 1;
+
+                SetHitDamage(damage);
+            }
+
+            void Register() OVERRIDE
+            {
+                OnEffectHitTarget += SpellEffectFn(spell_pal_shield_of_the_righteous_SpellScript::ChangeDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+            }
+        };
+
+        SpellScript* GetSpellScript() const OVERRIDE
+        {
+            return new spell_pal_shield_of_the_righteous_SpellScript();
+        }
+};
+
+// 75806, 85043, 85416 - Grand Crusader
+class spell_pal_grand_crusader : public SpellScriptLoader
+{
+    public:
+        spell_pal_grand_crusader() : SpellScriptLoader("spell_pal_grand_crusader") { }
+
+        class spell_pal_grand_crusader_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_pal_grand_crusader_AuraScript);
+
+            bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
+            {
+                if (!sSpellMgr->GetSpellInfo(SPELL_PALADIN_AVENGER_S_SHIELD))
+                    return false;
+                return true;
+            }
+
+            void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+            {
+                if (Unit* caster = GetCaster())
+                    caster->ToPlayer()->RemoveSpellCooldown(SPELL_PALADIN_AVENGER_S_SHIELD, true);
+            }
+
+            void Register() OVERRIDE
+            {
+                OnEffectApply += AuraEffectApplyFn(spell_pal_grand_crusader_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+            }
+        };
+
+        AuraScript* GetAuraScript() const OVERRIDE
+        {
+            return new spell_pal_grand_crusader_AuraScript();
+        }
+};
+
+// 89906 - Judgements of the Bold
+class spell_pal_judgements_of_the_bold : public SpellScriptLoader
+{
+    public:
+        spell_pal_judgements_of_the_bold() : SpellScriptLoader("spell_pal_judgements_of_the_bold") { }
+
+        class spell_pal_judgements_of_the_bold_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_pal_judgements_of_the_bold_AuraScript);
+
+            bool Validate (SpellInfo const* /*spellEntry*/)
+            {
+                if (!sSpellMgr->GetSpellInfo(SPELL_PALADIN_JUDG_BOLD_OVERTIME))
+                    return false;
+
+                return true;
+            }
+
+            bool Load()
+            {
+                if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
+                    return false;
+                return true;
+            }
+
+            void CalculateMana(AuraEffect const* /*aurEff*/, int32& amount, bool& canBeRecalculated)
+            {
+                if (Unit* caster = GetCaster())
+                {
+                    canBeRecalculated = true;
+                    int32 basemana = caster->ToPlayer()->GetCreateMana();
+                    amount = (3 * basemana) / 100; // 3% of base mana
+                }
+            }
+
+            void Register()
+            {
+                DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_pal_judgements_of_the_bold_AuraScript::CalculateMana, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE);
+            }
+        };
+
+        AuraScript* GetAuraScript() const
+        {
+            return new spell_pal_judgements_of_the_bold_AuraScript();
+        }
+};
+
+// 84963 - Inquisiton
+/// Updated 4.3.4
+class spell_pal_inquisiton : public SpellScriptLoader
+{
+    public:
+        spell_pal_inquisiton() : SpellScriptLoader("spell_pal_inquisiton") { }
+
+        class spell_pal_inquisiton_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_pal_inquisiton_SpellScript);
+
+            int32 holyPower;
+
+            bool Load()
+            {
+                if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
+                    return false;
+
+                if (GetCaster()->ToPlayer()->getClass() != CLASS_PALADIN)
+                    return false;
+
+                return true;
+            }
+
+            void GetHP(SpellEffIndex /*effIndex*/)
+            {
+                holyPower = GetCaster()->GetPower(POWER_HOLY_POWER);
+            }
+
+            void UpdateDuration()
+            {
+                if (Aura* aura = GetCaster()->GetAura(SPELL_PALADIN_INQUISITION))
+                {
+                    int32 duration = aura->GetMaxDuration();
+                    aura->SetDuration(duration*(holyPower+1));
+                }
+            }
+
+            void Register()
+            {
+                OnEffectHitTarget += SpellEffectFn(spell_pal_inquisiton_SpellScript::GetHP, EFFECT_0, SPELL_EFFECT_APPLY_AURA);
+                AfterHit += SpellHitFn(spell_pal_inquisiton_SpellScript::UpdateDuration);
+            }
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_pal_inquisiton_SpellScript();
+        }
+};
+
+// 20271 - Judgement
+class spell_pal_judgement : public SpellScriptLoader
+{
+    public:
+        spell_pal_judgement() : SpellScriptLoader("spell_pal_judgement") { }
+
+        class spell_pal_judgement_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_pal_judgement_SpellScript);
+
+            bool Validate(SpellInfo const* /*spellEntry*/)
+            {
+                if (!sSpellMgr->GetSpellInfo(SPELL_PALADIN_DIVINE_PURPOSE_PROC))
+                    return false;
+
+                return true;
+            }
+            
+            void SwitchSpell()
+            {
+                if(Unit* target = GetExplTargetUnit())
+                {
+                    Unit* caster = GetCaster();
+                    uint32 spellId = 0;
+
+                    // Seal of Truth and Seal of Righteousness have a dummy aura on effect 2
+                    Unit::AuraApplicationMap & sealAuras = caster->GetAppliedAuras();
+                    for (Unit::AuraApplicationMap::iterator iter = sealAuras.begin(); iter != sealAuras.end();)
+                    {
+                        Aura* aura = iter->second->GetBase();
+                        if (aura->GetSpellInfo()->GetSpellSpecific() == SPELL_SPECIFIC_SEAL)
+                        {
+                            if (AuraEffect* aureff = aura->GetEffect(2))
+                            {
+                                if (aureff->GetAuraType() == SPELL_AURA_DUMMY)
+                                {
+                                    if (sSpellMgr->GetSpellInfo(aureff->GetAmount()))
+                                        spellId = aureff->GetAmount();
+                                    break;
+                                }
+                            }
+                            if (!spellId)
+                            {
+                                switch (iter->first)
+                                {
+                                    // Seal of Insight, Seal of Justice
+                                    case SPELL_PALADIN_SEAL_OF_JUSTICE:
+                                    case SPELL_PALADIN_SEAL_OF_INSIGHT:
+                                        spellId = SPELL_PALADIN_JUDGEMENT_DAMAGE;
+                                }
+                            }
+                            break;
+                        }
+                        else
+                            ++iter;
+                    }
+                    // Cast Judgement
+                    if (spellId)
+                        caster->CastSpell(target, spellId, true);
+                }
+            }
+
+            void Register()
+            {
+                OnCast += SpellCastFn(spell_pal_judgement_SpellScript::SwitchSpell);
+            }
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_pal_judgement_SpellScript();
+        }
+};
+
 
 void AddSC_paladin_spell_scripts()
 {
@@ -993,4 +1293,10 @@ void AddSC_paladin_spell_scripts()
     new spell_pal_templar_s_verdict();
     new spell_pal_seal_of_righteousness();
     new spell_pal_guardian_ancient_kings();
+    new spell_pal_speed_of_light();
+    new spell_pal_shield_of_the_righteous();
+    new spell_pal_grand_crusader();
+    new spell_pal_judgements_of_the_bold();
+    new spell_pal_inquisiton();
+    new spell_pal_judgement();
 }
