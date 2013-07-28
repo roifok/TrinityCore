@@ -363,6 +363,18 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                     case 28865:
                         damage = (((InstanceMap*)m_caster->GetMap())->GetDifficulty() == REGULAR_DIFFICULTY ? 2750 : 4250);
                         break;
+                    // Ancient Fury
+                    case 86704:
+                    {
+                        Aura* ancientpower = m_caster->GetAura(86700);
+
+                        if (!ancientpower)
+                            return;
+
+                        damage = (damage * ancientpower->GetStackAmount()) ;
+                        break;
+                    }
+
                     // percent from health with min
                     case 25599:                             // Thundercrash
                     {
@@ -1398,7 +1410,7 @@ void Spell::EffectHeal(SpellEffIndex /*effIndex*/)
             {
                 if (caster->ToPlayer()->GetPrimaryTalentTree(caster->ToPlayer()->GetActiveSpec()) == TALENT_TREE_PALADIN_HOLY)
                 {
-                                 int32 bp0 = int32(caster->GetHealingDoneInPastSecs(15) * (19.0f + (1.5f * caster->ToPlayer()->GetFloatValue(PLAYER_MASTERY))) /100);
+                                 int32 bp0 = int32(caster->GetHealingDoneInPastSecs(15) * (16.0f + (1.5f * caster->ToPlayer()->GetFloatValue(PLAYER_MASTERY))) /100);
                                  int32 bp1 = int32(caster->ToPlayer()->GetMaxHealth()/3);
 
                                  if (bp0 > bp1)

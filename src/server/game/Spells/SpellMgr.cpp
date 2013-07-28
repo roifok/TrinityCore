@@ -2998,6 +2998,9 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
             case 73790: // Pain and Suffering
                 spellInfo->AttributesCu |= SPELL_ATTR0_CU_CONE_LINE;
                 break;
+            case 86674: // Ancient Healer
+                spellInfo->ProcCharges = 5;
+                break;
             case 24340: // Meteor
             case 26558: // Meteor
             case 28884: // Meteor
@@ -3020,9 +3023,6 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
             case 72505: // Ooze Eruption
             case 72624: // Ooze Eruption
             case 72625: // Ooze Eruption
-                // ONLY SPELLS WITH SPELLFAMILY_GENERIC and EFFECT_SCHOOL_DAMAGE
-                spellInfo->AttributesCu |= SPELL_ATTR0_CU_SHARE_DAMAGE;
-                break;
             case 18500: // Wing Buffet
             case 33086: // Wild Bite
             case 49749: // Piercing Blow
