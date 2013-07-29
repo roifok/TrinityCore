@@ -60,9 +60,6 @@ enum HunterSpells
     SPELL_HUNTER_PET_SPELL_FRENZY                   = 19615,
     SPELL_HUNTER_PET_SPELL_FOCUS_FIRE_REGEN         = 83468,
     SPELL_HUNTER_PET_AURA_FRENZY_TRIGGER            = 20784,
-    SPELL_HUNTER_INSTANT_SERPENT_STING              = 83077,
-    SPELL_HUNTER_IMPROVED_SERPENT_STING_R1          = 19464,
-    SPELL_HUNTER_IMPROVED_SERPENT_STING_R2          = 82834,
     
 };
 
@@ -1178,53 +1175,6 @@ public:
     }      
 };
 
-// 1978 - Serpent Sting
-class spell_hun_improved_serpent_sting : public SpellScriptLoader
-{
-    public:
-        spell_hun_improved_serpent_sting() : SpellScriptLoader("spell_hun_improved_serpent_sting") { }
-
-        class spell_hun_improved_serpent_sting_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_hun_improved_serpent_sting_AuraScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
-            {
-                if (!sSpellMgr->GetSpellInfo(SPELL_HUNTER_IMPROVED_SERPENT_STING_R1)||!sSpellMgr->GetSpellInfo(SPELL_HUNTER_IMPROVED_SERPENT_STING_R2))
-                    return false;
-                return true;
-            }                
-
-            void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-	        {
-            Unit* caster = GetCaster();
-            
-            if (!caster)
-                return;
-            
-                if (Unit* target = GetTarget())
-                {
-                    if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_HUNTER, HUNTER_ICON_ID_IMPROVED_SERPENT_STING, EFFECT_0))
-                    {
-                    int32 basepoints0 = aurEff->GetAmount() * GetAura()->GetEffect(EFFECT_0)->GetTotalTicks() * caster->SpellDamageBonusDone(target, GetSpellInfo(), GetAura()->GetEffect(0)->GetAmount(), DOT) / 100;
-                    caster->CastCustomSpell(target, SPELL_HUNTER_INSTANT_SERPENT_STING, &basepoints0, NULL, NULL, true, NULL, GetAura()->GetEffect(0));
-                    }
-			    }
-            }
-
-            void Register() OVERRIDE
-            {
-                AfterEffectApply += AuraEffectApplyFn(spell_hun_improved_serpent_sting_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-            }
-        };
-
-		AuraScript* GetAuraScript() const OVERRIDE
-        {
-            return new spell_hun_improved_serpent_sting_AuraScript();
-        }
-};
-
-
 void AddSC_hunter_spell_scripts()
 {
     new spell_hun_chimera_shot();
@@ -1250,6 +1200,5 @@ void AddSC_hunter_spell_scripts()
     new spell_hun_focus_fire();
     new spell_hun_frenzy_effect();
     new spell_hun_improved_steady_shot();
-    new spell_hun_improved_serpent_sting();
     new spell_hun_tnt();
 }

@@ -547,11 +547,6 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
             {
                 switch(m_spellInfo->Id)
                 {
-                    case 31803: // Seal of Truth - Inquiry of Faith
-                    {
-                        if (AuraEffect * aurEff = m_caster->GetAuraEffect(SPELL_AURA_ADD_PCT_MODIFIER, SPELLFAMILY_PALADIN, 3025, 0))
-                            damage += damage * (aurEff->GetAmount() / 1000);
-                    }
                     case 2812: // Holy Wrath
                     {
                         if (unitTarget->GetCreatureType() != CREATURE_TYPE_DEMON
