@@ -7190,6 +7190,14 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
             ToPlayer()->RemoveSpellCooldown(78674, true);
             break;
         }
+        // Improved Hamstring
+        case 12289:
+        case 12668:
+        {
+            if (!victim->HasAura(1715)) 
+				return false;
+            break;
+        }
         // Greater Heal Refund (Avatar Raiment set)
         case 37594:
         {

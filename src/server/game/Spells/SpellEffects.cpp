@@ -418,6 +418,58 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
             }
             case SPELLFAMILY_WARLOCK:
             {
+                switch(m_spellInfo->Id)
+                {
+                    case 3110: // Firebolt
+                    {
+                        if (m_caster->IsPet())
+                        {
+							int32 spell_power = GetCaster()->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_FIRE);
+							damage += int32((spell_power * 0.5f) / 2);
+                            int32 bp0 = 0;
+                            if (m_caster->GetOwner()->ToPlayer()->HasAura(91986)) // Burning Embers
+                            {
+                                bp0 = CalculatePct(int32(damage), 25) /7;
+                                m_caster->CastCustomSpell(unitTarget, 85421, &bp0, NULL, NULL, true);
+                            }
+                            if (m_caster->GetOwner()->ToPlayer()->HasAura(85112))
+                            {
+                                bp0 = CalculatePct(int32(damage), 50) /7;
+                                m_caster->CastCustomSpell(unitTarget, 85421, &bp0, NULL, NULL, true);
+                            }
+                            // Empowered Imp
+                            if (m_caster->GetOwner()->ToPlayer()->HasAura(47220) && roll_chance_i(2) || m_caster->GetOwner()->ToPlayer()->HasAura(47221) && roll_chance_i(4))
+                                m_caster->CastSpell(m_caster->GetOwner()->ToPlayer(),47283,true);
+                        }
+                        break;
+                    }
+                    case 6353: // Soul Fire
+                    {
+                        int32 bp0 = 0;
+                        if (m_caster->HasAura(91986)) // Burning Embers
+                        {
+                            bp0 = CalculatePct(int32(damage), 25) /7;
+                            m_caster->CastCustomSpell(unitTarget, 85421, &bp0, NULL, NULL, true);
+                        }
+                        if (m_caster->HasAura(85112))
+                        {
+                            bp0 = CalculatePct(int32(damage), 50) /7;
+                            m_caster->CastCustomSpell(unitTarget, 85421, &bp0, NULL, NULL, true);
+                        }
+                        if(m_caster->HasAura(18120)) // Improved soul fire rank 2
+                        {
+                            bp0 = 8;
+                            m_caster->CastCustomSpell(m_caster,85383,&bp0,NULL,NULL,true);
+                        }
+                        if(m_caster->HasAura(18119)) // Improved soul fire rank 1
+                        {
+                            bp0 = 4;
+                            m_caster->CastCustomSpell(m_caster,85383,&bp0,NULL,NULL,true);
+                        }
+                        break;
+					}
+                    break;
+                }
                 // Incinerate Rank 1 & 2
                 if ((m_spellInfo->SpellFamilyFlags[1] & 0x000040) && m_spellInfo->SpellIconID == 2128)
                 {
