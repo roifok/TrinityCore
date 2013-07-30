@@ -2782,20 +2782,16 @@ void SpellMgr::LoadSpellInfoStore()
 void SpellMgr::UnloadSpellInfoStore()
 {
     for (uint32 i = 0; i < GetSpellInfoStoreSize(); ++i)
-    {
-        if (mSpellInfoMap[i])
-            delete mSpellInfoMap[i];
-    }
+        delete mSpellInfoMap[i];
+
     mSpellInfoMap.clear();
 }
 
 void SpellMgr::UnloadSpellInfoImplicitTargetConditionLists()
 {
     for (uint32 i = 0; i < GetSpellInfoStoreSize(); ++i)
-    {
         if (mSpellInfoMap[i])
             mSpellInfoMap[i]->_UnloadImplicitTargetConditionLists();
-    }
 }
 
 void SpellMgr::LoadSpellInfoCustomAttributes()
@@ -3088,6 +3084,8 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
             default:
                 break;
         }
+
+        spellInfo->_InitializeExplicitTargetMask();
     }
 
     CreatureAI::FillAISpellInfo();
