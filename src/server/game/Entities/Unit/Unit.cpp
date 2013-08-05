@@ -759,10 +759,14 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         if (victim->GetTypeId() == TYPEID_PLAYER)
             victim->ToPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_TOTAL_DAMAGE_RECEIVED, damage);
 
-        victim->ModifyHealth(- (int32)damage);
+        victim->ModifyHealth(-(int32)damage);
 
         if (damagetype == DIRECT_DAMAGE || damagetype == SPELL_DIRECT_DAMAGE)
+        {
             victim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DIRECT_DAMAGE, spellProto ? spellProto->Id : 0);
+            if (victim->GetTypeId() == TYPEID_UNIT && !victim->IsPet())
+                victim->SetLastDamagedTime(time(NULL));
+        }
 
         if (victim->GetTypeId() != TYPEID_PLAYER)
             victim->AddThreat(this, float(damage), damageSchoolMask, spellProto);
@@ -4999,6 +5003,9 @@ bool Unit::HandleAuraProcOnPowerAmount(Unit* victim, uint32 /*damage*/, AuraEffe
                 {
                     case 0:
                     {
+                        if (HasAura(trigger_spell_id))
+                            return false;
+
                         // Do not proc if proc spell isnt starfire and starsurge
                         if (procSpell->Id != 2912 && procSpell->Id != 78674)
                             return false;
@@ -5012,6 +5019,9 @@ bool Unit::HandleAuraProcOnPowerAmount(Unit* victim, uint32 /*damage*/, AuraEffe
                     }
                     case 1:
                     {
+                        if (HasAura(trigger_spell_id))
+                            return false;
+
                         // Do not proc if proc spell isnt wrath and starsurge
                         if (procSpell->Id != 5176 && procSpell->Id != 78674)
                             return false;
@@ -10557,10 +10567,6 @@ int32 Unit::ModifyHealth(int32 dVal)
 
     if (dVal == 0)
         return 0;
-
-    // Part of Evade mechanics. Only track health lost, not gained.
-    if (dVal < 0 && GetTypeId() != TYPEID_PLAYER && !IsPet())
-        SetLastDamagedTime(time(NULL));
 
     int32 curHealth = (int32)GetHealth();
 
