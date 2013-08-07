@@ -129,6 +129,7 @@ void AddSC_boss_gyth();
 void AddSC_boss_rend_blackhand();
 void AddSC_boss_gizrul_the_slavener();
 void AddSC_boss_urok_doomhowl();
+void AddSC_boss_lord_valthalak();
 void AddSC_instance_blackrock_spire();
 void AddSC_boss_razorgore();                 //Blackwing lair
 void AddSC_boss_vaelastrasz();
@@ -615,6 +616,9 @@ void AddSC_shattrath_city();
 void AddSC_terokkar_forest();
 void AddSC_zangarmarsh();
 
+// Maelstrom
+void AddSC_kezan();
+
 // Events
 void AddSC_event_childrens_week();
 
@@ -644,6 +648,7 @@ void AddScripts()
     AddKalimdorScripts();
     AddOutlandScripts();
     AddNorthrendScripts();
+    AddMaelstromScripts();
     AddEventScripts();
     AddBattlegroundScripts();
     AddOutdoorPvPScripts();
@@ -773,6 +778,7 @@ void AddEasternKingdomsScripts()
     AddSC_boss_rend_blackhand();
     AddSC_boss_gizrul_the_slavener();
     AddSC_boss_urok_doomhowl();
+    AddSC_boss_lord_valthalak();
     AddSC_instance_blackrock_spire();
     AddSC_boss_razorgore();                 //Blackwing lair
     AddSC_boss_vaelastrasz();
@@ -1273,6 +1279,14 @@ void AddNorthrendScripts()
     AddSC_zuldrak();
     AddSC_crystalsong_forest();
     AddSC_isle_of_conquest();
+#endif
+}
+
+
+void AddMaelstromScripts()
+{
+#ifdef SCRIPTS
+    AddSC_kezan();
 #endif
 }
 
