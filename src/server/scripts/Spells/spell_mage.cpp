@@ -1014,14 +1014,13 @@ class spell_mage_nether_vortex : public SpellScriptLoader
                 if (Aura* aura = eventInfo.GetProcTarget()->GetAura(SPELL_MAGE_SLOW))
                     if (aura->GetCasterGUID() != GetTarget()->GetGUID())
                         return false;
-
                 return true;
             }
 
             void HandleEffectProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
             {
                 PreventDefaultAction();
-                GetTarget()->CastSpell(eventInfo.GetProcTarget(), SPELL_MAGE_SLOW, true, NULL, aurEff);
+                GetTarget()->CastSpell(GetTarget(), SPELL_MAGE_SLOW, true, NULL, aurEff);
             }
 
             void Register() OVERRIDE
