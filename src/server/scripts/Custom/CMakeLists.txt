@@ -12,6 +12,7 @@ set(scripts_STAT_SRCS
   ${scripts_STAT_SRCS}
   Custom/npc_enchanting.cpp
   Custom/npc_beastmaster.cpp
+  Custom/TeLe_gossip_codebox.cpp
 )
 
 message("  -> Prepared: Custom")

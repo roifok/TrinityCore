@@ -2873,11 +2873,8 @@ void AddSC_npcs_special()
     new npc_brewfest_reveler();
     new npc_mojo();
     new npc_training_dummy();
-<<<<<<< HEAD
     new npc_shadowfiend();
 	new npc_shadowy_apparition;
-=======
->>>>>>> trinitycore/4.3.4
     new npc_wormhole();
     new npc_pet_trainer();
     new npc_locksmith();

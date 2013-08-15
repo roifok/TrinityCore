@@ -1343,6 +1343,7 @@ void AddBattlegroundScripts()
 /* This is where custom scripts' loading functions should be declared. */
     void AddSC_npc_enchantment();
     void AddSC_Npc_Beastmaster();
+    void AddSC_TeLe_gossip_codebox();
 
 #endif
 
@@ -1352,6 +1353,6 @@ void AddCustomScripts()
     /* This is where custom scripts should be added. */
     AddSC_npc_enchantment();
     AddSC_Npc_Beastmaster();
-
+    AddSC_TeLe_gossip_codebox();
 #endif
 }

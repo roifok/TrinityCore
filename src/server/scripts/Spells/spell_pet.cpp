@@ -942,7 +942,7 @@ public:
                     mod += CalculatePct(1.0f, spellInfo->Effects[EFFECT_1].CalcValue());
                 }
 
-                bonusAP = owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.22f * mod;
+                bonusAP = owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.43f * mod;
 
                 amount += bonusAP;
             }
