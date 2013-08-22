@@ -894,10 +894,11 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
             SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, uint32(sObjectMgr->GetXPForLevel(petlevel)*PET_XP_FACTOR));
             //these formula may not be correct; however, it is designed to be close to what it should be
             //this makes dps 0.5 of pets level
-            SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(cinfo->mindmg));
+            SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float((petlevel - (petlevel / 4)) + m_owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.07f));
             //damage range is then petlevel / 2
-            SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(cinfo->maxdmg));
+            SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float((petlevel + (petlevel / 4)) + m_owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.09f));
             //damage is increased afterwards as strength and pet scaling modify attack power
+			SetBonusDamage(int32(m_owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.425f));
             SetModifierValue(UNIT_MOD_STAT_STAMINA, BASE_VALUE, float(m_owner->GetStat(STAT_STAMINA)) * 0.75f); 
             SetModifierValue(UNIT_MOD_ATTACK_POWER_POS, BASE_VALUE, float(cinfo->attackpower));
             break;

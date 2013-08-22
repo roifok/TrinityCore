@@ -6449,6 +6449,57 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
             }
         break;
         }
+
+        case SPELLFAMILY_HUNTER:
+        {
+			// Wild Quiver
+            if (dummySpell->Id == 76659)
+            {
+                if(AuraEffect const * aurEff = ToPlayer()->GetAuraEffect(76659,1))
+                {
+                    if (!procSpell || GetTypeId() != TYPEID_PLAYER || !victim)
+                        return false;
+
+                    float mastery = ToPlayer()->GetFloatValue(PLAYER_MASTERY);
+                    uint32 multi = aurEff->GetAmount() / 100;
+                    if (roll_chance_f(mastery * multi))
+                        CastSpell(victim, 53254, true, castItem, triggeredByAura);
+                }
+                return true;
+            }
+            break;
+            switch (dummySpell->SpellIconID)
+            {
+                case 3524: // Marked for Death
+                {
+                    if(!roll_chance_i(triggerAmount))
+                        return false;
+                        
+                    triggered_spell_id = 88691;
+                    target = victim;
+                    break;
+                }
+            }
+            break;
+        }
+		case SPELLFAMILY_WARRIOR:
+        {
+            // Strikes of Opportunity
+            if (dummySpell->Id == 76838)
+            {
+                if(AuraEffect const * aurEff = ToPlayer()->GetAuraEffect(76838,1))
+                {
+                    if (!procSpell || GetTypeId() != TYPEID_PLAYER || !victim)
+                        return false;
+
+                    uint32 multi = aurEff->GetAmount() / 100;
+                    if (roll_chance_f(ToPlayer()->GetFloatValue(PLAYER_MASTERY) * multi))
+                        CastSpell(victim, 76858, true, castItem, triggeredByAura);
+                }
+                return true;
+            } 
+            break;
+        }
         case SPELLFAMILY_DEATHKNIGHT:
         {
             // Blood-Caked Blade
@@ -7365,6 +7416,14 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
             basepoints0 = CalculatePct(triggerAmount, GetTotalAttackPowerValue(BASE_ATTACK));
             break;
         }
+        /*// Efflorescence
+        case 34151:
+        case 81274:
+        case 81275:
+        {
+            basepoints0 = CalculatePct(triggerAmount, int32(damage));
+            break;
+        }*/
         // Culling the Herd
         case 70893:
         {

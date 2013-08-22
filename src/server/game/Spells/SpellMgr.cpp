@@ -3138,6 +3138,11 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->Effects[0].TargetB = TARGET_DEST_DYNOBJ_ALLY;
                 spellInfo->Effects[0].Amplitude = 2000; // Interval
                 break;
+			case 81262: // Efflorescence
+                spellInfo->Effects[0].ApplyAuraName = SPELL_AURA_PERIODIC_HEAL;
+                spellInfo->Effects[0].TargetB = TARGET_DEST_DYNOBJ_ALLY;
+                spellInfo->Effects[0].Amplitude = 1000; // Interval
+                break;
              case 87934: // Serpent Spread
              case 87935:
                  spellInfo->Effects[0].Effect = SPELL_EFFECT_APPLY_AURA;

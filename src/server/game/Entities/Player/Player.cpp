@@ -2616,7 +2616,7 @@ void Player::Regenerate(Powers power)
         case POWER_HOLY_POWER:                                          // Regenerate holy power
         {
             if (!IsInCombat())
-                addvalue += -1.0f;      // remove 1 each 10 sec
+            addvalue += -0.2f;      // remove 1 each 10 sec
         }
         break;
         case POWER_RUNES:
@@ -24867,7 +24867,7 @@ uint32 Player::GetBarberShopCost(uint8 newhairstyle, uint8 newhaircolor, uint8 n
 void Player::InitGlyphsForLevel()
 {
     uint32 slot = 0;
-    for (uint32 i = 0; i < sGlyphSlotStore.GetNumRows() && slot < MAX_GLYPH_SLOT_INDEX; ++i)
+    for (uint8 i = 0, slot = 0; i < sGlyphSlotStore.GetNumRows(); ++i)
         if (GlyphSlotEntry const* gs = sGlyphSlotStore.LookupEntry(i))
             SetGlyphSlot(slot++, gs->Id);
 
@@ -24882,6 +24882,43 @@ void Player::InitGlyphsForLevel()
         slotMask |= 0x10 | 0x20 | 0x100;
 
     SetUInt32Value(PLAYER_GLYPHS_ENABLED, slotMask);
+	
+	uint32 spellId1 = 89964;
+    uint32 spellId2 = 90647;
+	bool change = false;
+
+    if (level > 80)
+    {
+        spellId1 = 90647;
+        spellId2 = 89964;
+        change = true;
+    }
+    else if (level >= 25)
+    {
+        change = true;
+    }
+    else
+    {
+        if (HasSpell(spellId1))
+            removeSpell(spellId1);
+
+        if (HasSpell(spellId2))
+            removeSpell(spellId2);
+    }
+
+    if (change)
+    {
+        if (!HasSpell(spellId2))
+        {
+            if (!IsInWorld())
+                addSpell(spellId2,true,true,false,false);
+            else
+                learnSpell(spellId2, false);
+
+            if (HasSpell(spellId1))
+                removeSpell(spellId1);
+        }
+    }
 }
 
 void Player::SetGlyph(uint8 slot, uint32 glyph)

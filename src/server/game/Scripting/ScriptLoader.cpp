@@ -1346,6 +1346,7 @@ void AddBattlegroundScripts()
     void AddSC_npc_enchantment();
     void AddSC_Npc_Beastmaster();
     void AddSC_TeLe_gossip_codebox();
+	void AddSC_item_reset_talent();
 
 #endif
 
@@ -1356,5 +1357,6 @@ void AddCustomScripts()
     AddSC_npc_enchantment();
     AddSC_Npc_Beastmaster();
     AddSC_TeLe_gossip_codebox();
+	AddSC_item_reset_talent();
 #endif
 }

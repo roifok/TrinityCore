@@ -18,7 +18,7 @@ typedef struct Eric Rochet2;
 Rochet2 TeLe [] = // key = i & Key
 {
         {1,     0,      2,      "Stormwind",    0,      0,      2,      0,      -8842.09f,      626.358f,       94.0867f,       3.61363f},
-        {1,     0,      2,      "Orgrimmar",    0,      0,      1,      1,      1601.08f,       -4378.69f,      9.9846f,        2.14362f},
+        {1,     0,      2,      "Orgrimmar",    0,      0,      1,      1,      1601.08f,       -4378.69f,      20.9846f,        2.14362f},
         {1,     0,      2,      "Darnassus",    0,      0,      2,      1,      9869.91f,       2493.58f,       1315.88f,       2.78897f},
         {1,     0,      2,      "Ironforge",    0,      0,      2,      0,      -4900.47f,      -962.585f,      501.455f,       5.40538f},
         {1,     0,      2,      "Exodar",       0,      0,      2,      530,    -3864.92f,      -11643.7f,      -137.644f,      5.50862f},
@@ -173,7 +173,7 @@ Rochet2 TeLe [] = // key = i & Key
         {9,     0,      2,      "Wintergrasp",  0,      77,     0,      571,    4522.23f,       2828.01f,       389.975f,       0.215009f},
         {9,     1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
  
-//      {10,    0,      2,      "Teleport",     0,      0,      0,      map,    xf,     yf,     zf,     of},
+//        {10,    7100,      2,      "Reset Talents",     0,      0,      0,      0,    0,     0,     0,     0},
 //      {10,    1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
 };
  
@@ -269,14 +269,14 @@ class TeLe_gossip_codebox : public CreatureScript
         bool OnGossipHello(Player* pPlayer, Creature* pCreature)
         {
                 Custom_GetMenu(pPlayer, pCreature, 1);
-                return true;
+                return true;  
         }
  
         bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
         {
                 pPlayer->PlayerTalkClass->ClearMenus(); // clear the menu
- 
-                pPlayer->ModifyMoney(-1 * TeLe[uiAction].cost); // take cash
+
+				pPlayer->ModifyMoney(-1 * TeLe[uiAction].cost); // take cash
                 uint32 Key = TeLe[uiAction].next_menu_id;
                 if (Key == 0) // if no next_menu_id, then teleport to coords
                 {
@@ -289,9 +289,11 @@ class TeLe_gossip_codebox : public CreatureScript
                         pPlayer->GetSession()->SendAreaTriggerMessage(ERROR_COMBAT);
                         Key = TeLe[uiAction].menu_id;
                 }
- 
+
                 Custom_GetMenu(pPlayer, pCreature, Key);
                 return true;
+
+
         }
 };
  

@@ -1157,7 +1157,8 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
             spellId = 3025;
             break;
         case FORM_TREE:
-            spellId = 34123;
+            spellId = 81097;
+            spellId2 = 81098;
             break;
         case FORM_TRAVEL:
             spellId = 5419;
@@ -5396,13 +5397,16 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster) const
                     break;
                 }                
                 case 81262: // Efflorescence
+                {
                     if(GetEffIndex() == 0)
 					{
-						int32 bp = GetAmount();
+						int32 bp = caster->GetHealingDoneInPastSecs(1);
 						caster->CastCustomSpell(target,81269,&bp,NULL,NULL,true);
 					}
 					break;
+			    }
 			}
+
             break;
         }
         case SPELLFAMILY_ROGUE:

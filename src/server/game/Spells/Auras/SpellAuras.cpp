@@ -1505,7 +1505,23 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                         target->CastSpell(target, 70725, true);
                 break;
             }
+            switch(GetId())
+            {
+                case 77492: // Total Eclipse
+                    GetEffect(0)->SetAmount(int32(caster->GetFloatValue(PLAYER_MASTERY)*2.0f));
+                    break;
+            }
             break;
+       case SPELLFAMILY_MAGE:
+             switch(GetId())
+             {
+                case 76595: // Flashburn
+                {
+                    GetEffect(0)->SetAmount(int32(caster->GetFloatValue(PLAYER_MASTERY)*2.8f));
+                    break;
+                }
+             }
+             break;
         case SPELLFAMILY_HUNTER:
             switch (GetId())
             {
@@ -1525,6 +1541,46 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                     break;
             }
             break;
+         case SPELLFAMILY_WARRIOR:
+         {
+            switch(GetId())
+            {
+                case 76856: // Unshackled Fury
+                {
+                    GetEffect(0)->SetAmount(int32(caster->GetFloatValue(PLAYER_MASTERY)*5.6f));
+                    GetEffect(1)->SetAmount(int32(caster->GetFloatValue(PLAYER_MASTERY)*5.6f));
+                    break;
+                }
+                case 76857: // Critical Block
+                {
+                    GetEffect(0)->SetAmount(int32(caster->GetFloatValue(PLAYER_MASTERY)*1.5f));
+                    GetEffect(0)->SetAmount(int32(caster->GetFloatValue(PLAYER_MASTERY)*1.5f));
+                    break;
+                }
+                case 1715: // Hamstring
+                {
+                    if(caster->HasAura(12668)) // Improved Hamstring rank 2
+                    {
+                    if(target->HasAura(1715)) // If he already has hamstring
+                        {
+                        caster->CastSpell(target,23694,false); // Not triggered
+                        if(!caster->ToPlayer()->HasSpellCooldown(23694))
+                            caster->ToPlayer()->AddSpellCooldown(23694,0,uint32(time(NULL) + 30000)); // Add 30 seconds cooldown
+                        }
+                    }
+                    if(caster->HasAura(12289)) // Improved Hamstring rank 1
+                    {
+                        if(target->HasAura(1715)) // If he already has hamstring
+                        {
+                        caster->CastSpell(target,23694,false); // Not triggered
+                        if(!caster->ToPlayer()->HasSpellCooldown(23694))
+                            caster->ToPlayer()->AddSpellCooldown(23694,0,uint32(time(NULL) + 60000)); // Add 60 seconds cooldown
+                        }
+                    }
+                }
+            }
+            break;
+        }
         case SPELLFAMILY_PALADIN:
             switch (GetId())
             {
@@ -1538,8 +1594,13 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                             target->RemoveAurasDueToSpell(71166);
                     }
                     break;
-            }
-            break;
+                case 76671: // Divine Bulwark
+                   {
+                       GetEffect(0)->SetAmount(int32(caster->GetFloatValue(PLAYER_MASTERY)*2.25f));
+                       break;
+                   }
+             }
+             break;
         case SPELLFAMILY_WARLOCK:
             // Drain Soul - If the target is at or below 25% health, Drain Soul causes four times the normal damage
             if (GetSpellInfo()->SpellFamilyFlags[0] & 0x00004000)

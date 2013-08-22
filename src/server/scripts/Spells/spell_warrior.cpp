@@ -853,53 +853,53 @@ class spell_warr_sudden_death : public SpellScriptLoader
 };
 
 // 12289, 12669 - Improved Hamstring
+/// Updated 4.3.4
 class spell_warr_improved_hamstring : public SpellScriptLoader
 {
-    public:
-        spell_warr_improved_hamstring() : SpellScriptLoader("spell_warr_improved_hamstring") { }
-
-        class spell_warr_improved_hamstring_SpellScript : public SpellScript
+public:
+    spell_warr_improved_hamstring() : SpellScriptLoader("spell_warr_improved_hamstring") { }
+ 
+    class spell_warr_improved_hamstring_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_warr_improved_hamstring_SpellScript)
+ 
+        bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
         {
-            PrepareSpellScript(spell_warr_improved_hamstring_SpellScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
-            {
-                if (!sSpellMgr->GetSpellInfo(SPELL_WARRIOR_IMPROVED_HAMSTRING_R1 || SPELL_WARRIOR_IMPROVED_HAMSTRING_R2))
-                    return false;
-                return true;
-            }
-
-            void HandleOnHit()
-            {   
-				if (Aura* aur = GetHitUnit()->GetAura(SPELL_WARRIOR_HAMSTRING, GetCaster()->GetGUID()))                    
-				{
-				    if(GetCaster()->HasAura(SPELL_WARRIOR_IMPROVED_HAMSTRING_R1)) // Improved Hamstring rank 1
-				    {
-					    GetCaster()->CastSpell(GetHitUnit(),23694,false);
-					    if(!GetCaster()->ToPlayer()->HasSpellCooldown(23694))
-					        GetCaster()->ToPlayer()->AddSpellCooldown(23694,0,uint32(time(NULL) + 30)); // Add 30 seconds cooldown
-					}
-				    if(GetCaster()->HasAura(SPELL_WARRIOR_IMPROVED_HAMSTRING_R2)) // Improved Hamstring rank 2
-				    {
-					    GetCaster()->CastSpell(GetHitUnit(),23694,false);
-					    if(!GetCaster()->ToPlayer()->HasSpellCooldown(23694))
-					        GetCaster()->ToPlayer()->AddSpellCooldown(23694,0,uint32(time(NULL) + 30)); // Add 30 seconds cooldown
-					}
-				}
-				else
-                    GetCaster()->CastSpell(GetHitUnit(),SPELL_WARRIOR_HAMSTRING,false);
-            }
-		
-            void Register() OVERRIDE
-            {
-                OnHit += SpellHitFn(spell_warr_improved_hamstring_SpellScript::HandleOnHit); // correct?
-            }
-        };
-
-        SpellScript* GetSpellScript() const OVERRIDE
-        {
-            return new spell_warr_improved_hamstring_SpellScript();
+            return true;
         }
+ 
+        void HandleBeforeHit()
+        {
+            if (GetCaster()->GetTypeId() != TYPEID_PLAYER)
+                return;
+ 
+            Unit* unitTarget = GetHitUnit();
+            if ((GetCaster()->HasAura(SPELL_WARRIOR_IMPROVED_HAMSTRING_R1) || (GetCaster()->HasAura(SPELL_WARRIOR_IMPROVED_HAMSTRING_R2))) &&
+                (unitTarget->HasAura(SPELL_WARRIOR_HAMSTRING,GetCaster()->GetGUID())))
+            {
+                if (!GetCaster()->ToPlayer()->HasSpellCooldown(23694))
+                {
+                    GetCaster()->CastSpell(unitTarget,23694,true);
+ 
+                    if (GetCaster()->HasAura(SPELL_WARRIOR_IMPROVED_HAMSTRING_R1))
+                        GetCaster()->ToPlayer()->AddSpellCooldown(23694, 0, time(NULL) + 60);
+                   
+                    if (GetCaster()->HasAura(SPELL_WARRIOR_IMPROVED_HAMSTRING_R2))
+                        GetCaster()->ToPlayer()->AddSpellCooldown(23694, 0, time(NULL) + 30);
+                }
+            }
+        }
+ 
+        void Register()
+        {
+            BeforeHit += SpellHitFn(spell_warr_improved_hamstring_SpellScript::HandleBeforeHit);
+        }
+    };
+ 
+    SpellScript *GetSpellScript() const
+    {
+        return new spell_warr_improved_hamstring_SpellScript();
+    }
 };
 
 // 12328, 18765, 35429 - Sweeping Strikes
@@ -1266,5 +1266,5 @@ void AddSC_warrior_spell_scripts()
     new spell_warr_vigilance_trigger();
     new spell_warr_heroic_leap();
     new spell_warr_thunderclap();
-    new spell_warr_improved_hamstring();
+    /*new spell_warr_improved_hamstring();*/
 }

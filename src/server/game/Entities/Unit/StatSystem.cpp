@@ -1102,7 +1102,7 @@ void Guardian::UpdateArmor()
 
     // hunter pets gain 35% of owner's armor value, warlock pets gain 100% of owner's armor
     if (IsHunterPet())
-        bonus_armor = float(CalculatePct(m_owner->GetArmor(), 70));
+        bonus_armor = float(CalculatePct(m_owner->GetArmor(), 35));
     else if (IsPet())
         bonus_armor = m_owner->GetArmor();
 
@@ -1190,7 +1190,7 @@ void Guardian::UpdateAttackPowerAndDamage(bool ranged)
         }
         else if (IsPetGhoul()) //ghouls benefit from deathknight's attack power (may be summon pet or not)
         {
-            bonusAP = owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.22f;
+            bonusAP = owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.43f;
             SetBonusDamage(int32(owner->GetTotalAttackPowerValue(BASE_ATTACK) * 0.1287f));
         }
         else if (IsSpiritWolf()) //wolf benefit from shaman's attack power
@@ -1292,8 +1292,8 @@ void Guardian::UpdateDamagePhysical(WeaponAttackType attType)
     float weapon_mindamage = GetWeaponDamageRange(BASE_ATTACK, MINDAMAGE);
     float weapon_maxdamage = GetWeaponDamageRange(BASE_ATTACK, MAXDAMAGE);
 
-    float mindamage = ((base_value + weapon_mindamage) * base_pct + total_value) * total_pct;
-    float maxdamage = ((base_value + weapon_maxdamage) * base_pct + total_value) * total_pct;
+    float mindamage = (((base_value + weapon_mindamage) * base_pct + total_value) * total_pct);
+    float maxdamage = (((base_value + weapon_maxdamage) * base_pct + total_value) * total_pct);
 
     Unit::AuraEffectList const& mDummy = GetAuraEffectsByType(SPELL_AURA_MOD_ATTACKSPEED);
     for (Unit::AuraEffectList::const_iterator itr = mDummy.begin(); itr != mDummy.end(); ++itr)
