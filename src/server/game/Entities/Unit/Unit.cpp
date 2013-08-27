@@ -13192,8 +13192,6 @@ void Unit::UpdateReactives(uint32 p_time)
                     if (getClass() == CLASS_WARRIOR && GetTypeId() == TYPEID_PLAYER)
                         ToPlayer()->ClearComboPoints();
                     break;
-                default:
-                    break;
             }
         }
         else
@@ -13652,13 +13650,13 @@ bool Unit::IsTriggeredAtSpellProcEvent(Unit* victim, Aura* aura, SpellInfo const
     {
         if (!isVictim)
         {
-            uint32 WeaponSpeed = GetAttackTime(attType);
-            chance = GetPPMProcChance(WeaponSpeed, spellProcEvent->ppmRate, spellProto);
+            uint32 weaponSpeed = GetAttackTime(attType);
+            chance = GetPPMProcChance(weaponSpeed, spellProcEvent->ppmRate, spellProto);
         }
-        else
+        else if (victim)
         {
-            uint32 WeaponSpeed = victim->GetAttackTime(attType);
-            chance = victim->GetPPMProcChance(WeaponSpeed, spellProcEvent->ppmRate, spellProto);
+            uint32 weaponSpeed = victim->GetAttackTime(attType);
+            chance = victim->GetPPMProcChance(weaponSpeed, spellProcEvent->ppmRate, spellProto);
         }
     }
     // Apply chance modifer aura
@@ -15695,34 +15693,12 @@ void Unit::WriteMovementInfo(WorldPacket& data, Movement::ExtraMovementStatusEle
     bool hasTransportData = GetTransGUID() != 0;
     bool hasSpline = IsSplineEnabled();
 
-    bool hasTransportTime2;
-    bool hasTransportTime3;
-    bool hasPitch;
-    bool hasFallData;
-    bool hasFallDirection;
-    bool hasSplineElevation;
-
-    if (GetTypeId() == TYPEID_PLAYER)
-    {
-        hasTimestamp = m_movementInfo.time != 0;
-        hasTransportTime2 = m_movementInfo.bits.hasTransportTime2;
-        hasTransportTime3 = m_movementInfo.bits.hasTransportTime3;
-        hasPitch = m_movementInfo.bits.hasPitch;
-        hasFallData = m_movementInfo.bits.hasFallData;
-        hasFallDirection = m_movementInfo.bits.hasFallDirection;
-        hasSplineElevation = m_movementInfo.bits.hasSplineElevation;
-    }
-    else
-    {
-        hasTransportTime2 = HasExtraUnitMovementFlag(MOVEMENTFLAG2_INTERPOLATED_MOVEMENT);
-        hasTransportTime3 = false;
-        hasPitch = HasUnitMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING)) || HasExtraUnitMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING);
-        hasFallDirection = HasUnitMovementFlag(MOVEMENTFLAG_FALLING);
-        hasFallData = hasFallDirection; // FallDirection implies that FallData is set as well
-                                        // the only case when hasFallData = 1 && hasFallDirection = 0
-                                        // is for MSG_MOVE_LAND, which is handled above, in player case
-        hasSplineElevation = HasUnitMovementFlag(MOVEMENTFLAG_SPLINE_ELEVATION);
-    }
+    bool hasTransportTime2 = hasTransportData && m_movementInfo.transport.time2 != 0;
+    bool hasTransportTime3 = false;
+    bool hasPitch = HasUnitMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING)) || HasExtraUnitMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING);
+    bool hasFallDirection = HasUnitMovementFlag(MOVEMENTFLAG_FALLING);
+    bool hasFallData = hasFallDirection || m_movementInfo.jump.fallTime != 0;
+    bool hasSplineElevation = HasUnitMovementFlag(MOVEMENTFLAG_SPLINE_ELEVATION);
 
     MovementStatusElements const* sequence = GetMovementStatusElementsSequence(data.GetOpcode());
     if (!sequence)
@@ -16401,15 +16377,9 @@ bool Unit::SetFall(bool enable)
     {
         AddUnitMovementFlag(MOVEMENTFLAG_FALLING);
         m_movementInfo.SetFallTime(0);
-        m_movementInfo.bits.hasFallData = true;
-        m_movementInfo.bits.hasFallDirection = true;
     }
     else
-    {
         RemoveUnitMovementFlag(MOVEMENTFLAG_FALLING | MOVEMENTFLAG_FALLING_FAR);
-        m_movementInfo.bits.hasFallDirection = false;
-        // Do not remove hasFallData marker
-    }
 
     return true;
 }

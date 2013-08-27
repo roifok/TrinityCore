@@ -869,6 +869,8 @@ Player::Player(WorldSession* session): Unit(true), phaseMgr(this)
 
     m_WeeklyQuestChanged = false;
 
+    m_MonthlyQuestChanged = false;
+
     m_SeasonalQuestChanged = false;
 
     SetPendingBind(0, 0);
@@ -2151,8 +2153,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     // reset movement flags at teleport, because player will continue move with these flags after teleport
     SetUnitMovementFlags(GetUnitMovementFlags() & MOVEMENTFLAG_MASK_HAS_PLAYER_STATUS_OPCODE);
     m_movementInfo.ResetJump();
-    m_movementInfo.bits.hasPitch = false;
-    m_movementInfo.bits.hasSplineElevation = false;
     DisableSpline();
 
     if (m_transport)
@@ -6855,10 +6855,8 @@ void Player::CheckAreaExploreAndOutdoor()
                 }
                 else if (diff > 5)
                 {
-                    int32 exploration_percent = (100-((diff-5)*5));
-                    if (exploration_percent > 100)
-                        exploration_percent = 100;
-                    else if (exploration_percent < 0)
+                    int32 exploration_percent = 100 - ((diff - 5) * 5);
+                    if (exploration_percent < 0)
                         exploration_percent = 0;
 
                     XP = uint32(sObjectMgr->GetBaseXP(areaEntry->area_level)*exploration_percent/100*sWorld->getRate(RATE_XP_EXPLORE));
@@ -27410,6 +27408,12 @@ void Player::ReadMovementInfo(WorldPacket& data, MovementInfo* mi, Movement::Ext
     bool hasTimestamp = false;
     bool hasOrientation = false;
     bool hasTransportData = false;
+    bool hasTransportTime2 = false;
+    bool hasTransportTime3 = false;
+    bool hasPitch = false;
+    bool hasFallData = false;
+    bool hasFallDirection = false;
+    bool hasSplineElevation = false;
 
     ObjectGuid guid;
     ObjectGuid tguid;
@@ -27479,24 +27483,24 @@ void Player::ReadMovementInfo(WorldPacket& data, MovementInfo* mi, Movement::Ext
                 break;
             case MSEHasTransportTime2:
                 if (hasTransportData)
-                    mi->bits.hasTransportTime2 = data.ReadBit();
+                    hasTransportTime2 = data.ReadBit();
                 break;
             case MSEHasTransportTime3:
                 if (hasTransportData)
-                    mi->bits.hasTransportTime3 = data.ReadBit();
+                    hasTransportTime3 = data.ReadBit();
                 break;
             case MSEHasPitch:
-                mi->bits.hasPitch = !data.ReadBit();
+                hasPitch = !data.ReadBit();
                 break;
             case MSEHasFallData:
-                mi->bits.hasFallData = data.ReadBit();
+                hasFallData = data.ReadBit();
                 break;
             case MSEHasFallDirection:
-                if (mi->bits.hasFallData)
-                    mi->bits.hasFallDirection = data.ReadBit();
+                if (hasFallData)
+                    hasFallDirection = data.ReadBit();
                 break;
             case MSEHasSplineElevation:
-                mi->bits.hasSplineElevation = !data.ReadBit();
+                hasSplineElevation = !data.ReadBit();
                 break;
             case MSEHasSpline:
                 data.ReadBit();
@@ -27551,39 +27555,39 @@ void Player::ReadMovementInfo(WorldPacket& data, MovementInfo* mi, Movement::Ext
                     data >> mi->transport.time;
                 break;
             case MSETransportTime2:
-                if (hasTransportData && mi->bits.hasTransportTime2)
+                if (hasTransportData && hasTransportTime2)
                     data >> mi->transport.time2;
                 break;
             case MSETransportTime3:
-                if (hasTransportData && mi->bits.hasTransportTime3)
+                if (hasTransportData && hasTransportTime3)
                     data >> mi->transport.time3;
                 break;
             case MSEPitch:
-                if (mi->bits.hasPitch)
+                if (hasPitch)
                     mi->pitch = G3D::wrap(data.read<float>(), float(-M_PI), float(M_PI));
                 break;
             case MSEFallTime:
-                if (mi->bits.hasFallData)
+                if (hasFallData)
                     data >> mi->jump.fallTime;
                 break;
             case MSEFallVerticalSpeed:
-                if (mi->bits.hasFallData)
+                if (hasFallData)
                     data >> mi->jump.zspeed;
                 break;
             case MSEFallCosAngle:
-                if (mi->bits.hasFallData && mi->bits.hasFallDirection)
+                if (hasFallData && hasFallDirection)
                     data >> mi->jump.cosAngle;
                 break;
             case MSEFallSinAngle:
-                if (mi->bits.hasFallData && mi->bits.hasFallDirection)
+                if (hasFallData && hasFallDirection)
                     data >> mi->jump.sinAngle;
                 break;
             case MSEFallHorizontalSpeed:
-                if (mi->bits.hasFallData && mi->bits.hasFallDirection)
+                if (hasFallData && hasFallDirection)
                     data >> mi->jump.xyspeed;
                 break;
             case MSESplineElevation:
-                if (mi->bits.hasSplineElevation)
+                if (hasSplineElevation)
                     data >> mi->splineElevation;
                 break;
             case MSECounter:
@@ -27681,13 +27685,13 @@ void Player::ReadMovementInfo(WorldPacket& data, MovementInfo* mi, Movement::Ext
     REMOVE_VIOLATING_FLAGS(mi->HasMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY | MOVEMENTFLAG_CAN_FLY) && mi->HasMovementFlag(MOVEMENTFLAG_FALLING),
         MOVEMENTFLAG_FALLING);
 
-    REMOVE_VIOLATING_FLAGS(mi->HasMovementFlag(MOVEMENTFLAG_FALLING) && (!mi->bits.hasFallData || !mi->bits.hasFallDirection), MOVEMENTFLAG_FALLING);
+    REMOVE_VIOLATING_FLAGS(mi->HasMovementFlag(MOVEMENTFLAG_FALLING) && (!hasFallData || !hasFallDirection), MOVEMENTFLAG_FALLING);
 
     REMOVE_VIOLATING_FLAGS(mi->HasMovementFlag(MOVEMENTFLAG_SPLINE_ELEVATION) &&
-        (!mi->bits.hasSplineElevation || G3D::fuzzyEq(mi->splineElevation, 0.0f)), MOVEMENTFLAG_SPLINE_ELEVATION);
+        (!hasSplineElevation || G3D::fuzzyEq(mi->splineElevation, 0.0f)), MOVEMENTFLAG_SPLINE_ELEVATION);
 
     // Client first checks if spline elevation != 0, then verifies flag presence
-    if (mi->bits.hasSplineElevation)
+    if (hasSplineElevation)
         mi->AddMovementFlag(MOVEMENTFLAG_SPLINE_ELEVATION);
 
     #undef REMOVE_VIOLATING_FLAGS
