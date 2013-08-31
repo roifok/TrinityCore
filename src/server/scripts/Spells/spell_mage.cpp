@@ -1002,7 +1002,7 @@ class spell_mage_nether_vortex : public SpellScriptLoader
         {
             PrepareAuraScript(spell_mage_nether_vortex_AuraScript);
 
-            bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
+            bool Validate(SpellInfo const* /*spellInfo*/)
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_MAGE_SLOW))
                     return false;
@@ -1011,26 +1011,33 @@ class spell_mage_nether_vortex : public SpellScriptLoader
 
             bool DoCheck(ProcEventInfo& eventInfo)
             {
-                if (Aura* aura = eventInfo.GetProcTarget()->GetAura(SPELL_MAGE_SLOW))
-                    if (aura->GetCasterGUID() != GetTarget()->GetGUID())
+                if (eventInfo.GetProcTarget()->HasAura(SPELL_MAGE_SLOW, GetTarget()->GetGUID()))
+                    return true;
+
+                Unit::AuraList& auras = GetTarget()->GetSingleCastAuras();
+                for (Unit::AuraList::iterator itr = auras.begin(); itr != auras.end(); ++itr)
+                {
+                    if ((*itr)->GetId() == SPELL_MAGE_SLOW)
                         return false;
+                }
+
                 return true;
             }
 
             void HandleEffectProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
             {
-                PreventDefaultAction();
-                GetTarget()->CastSpell(GetTarget(), SPELL_MAGE_SLOW, true, NULL, aurEff);
+                PreventDefaultAction(); // will prevent default effect execution
+                GetTarget()->CastSpell(eventInfo.GetProcTarget(), SPELL_MAGE_SLOW, true, NULL, aurEff);
             }
 
-            void Register() OVERRIDE
+            void Register()
             {
                 DoCheckProc += AuraCheckProcFn(spell_mage_nether_vortex_AuraScript::DoCheck);
                 OnEffectProc += AuraEffectProcFn(spell_mage_nether_vortex_AuraScript::HandleEffectProc, EFFECT_0, SPELL_AURA_DUMMY);
             }
         };
 
-        AuraScript* GetAuraScript() const OVERRIDE
+        AuraScript* GetAuraScript() const
         {
             return new spell_mage_nether_vortex_AuraScript();
         }

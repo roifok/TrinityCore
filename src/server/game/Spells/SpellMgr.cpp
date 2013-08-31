@@ -3116,13 +3116,13 @@ void SpellMgr::LoadSpellInfoCorrections()
         switch (spellInfo->Id)
         {
             case 77505: //Earthquake
-            spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(3); // 20yd Damn, it hack i know
-            spellInfo->Effects[EFFECT_0].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_10_YARDS); // 10yd
-            break;
+                spellInfo->RangeEntry = sSpellRangeStore.LookupEntry(3); // 20yd Damn, it hack i know
+                spellInfo->Effects[EFFECT_0].RadiusEntry = sSpellRadiusStore.LookupEntry(EFFECT_RADIUS_10_YARDS); // 10yd
+                break;
             case 28176: // nether ward // fel armor // demon armor
             case 687:
-            spellInfo->Effects[2].BasePoints = 91711;
-            break;
+                spellInfo->Effects[2].BasePoints = 91711;
+                break;
             case 42730: // Woe Strike
                 spellInfo->Effects[EFFECT_1].TriggerSpell = 42739;
                 break;
@@ -3131,6 +3131,10 @@ void SpellMgr::LoadSpellInfoCorrections()
                 break;
             case 82661: // Aspect of the Fox
                 spellInfo->Effects[0].ApplyAuraName = SPELL_AURA_PROC_TRIGGER_SPELL;
+                break;
+            case 86105:// Jinx
+            case 85547:
+                spellInfo->DurationEntry = sSpellDurationStore.LookupEntry(5);
                 break;
             case 73920: // Healing rain targets fix
             case 88685: // Holy word: Sanctuary
@@ -3143,8 +3147,8 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->Effects[0].TargetB = TARGET_DEST_DYNOBJ_ALLY;
                 spellInfo->Effects[0].Amplitude = 1000; // Interval
                 break;
-             case 87934: // Serpent Spread
-             case 87935:
+            case 87934: // Serpent Spread
+            case 87935:
                  spellInfo->Effects[0].Effect = SPELL_EFFECT_APPLY_AURA;
             case 52611: // Summon Skeletons
             case 52612: // Summon Skeletons
@@ -3379,6 +3383,15 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 78674: // Starsurge
                 spellInfo->Effects[EFFECT_1].Effect = SPELL_EFFECT_DUMMY;
                 spellInfo->Effects[EFFECT_1].TargetA = TARGET_UNIT_CASTER;
+                break;
+            case 118:   // Polymorph
+            case 61305: // Polymorph (other animal)
+            case 28272: // polymorph (other animal)
+            case 61721: // Polymorph (other animal)
+            case 61780: // Polymorph (other animal)
+            case 28271: // Polymorph (other animal)
+                spellInfo->AuraInterruptFlags = AURA_INTERRUPT_FLAG_TAKE_DAMAGE;
+                spellInfo->ProcCharges = 1;
                 break;
             case 70728: // Exploit Weakness (needs target selection script)
             case 70840: // Devious Minds (needs target selection script)

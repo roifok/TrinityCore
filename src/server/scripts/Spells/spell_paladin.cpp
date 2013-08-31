@@ -1237,41 +1237,6 @@ class spell_pal_shield_of_the_righteous : public SpellScriptLoader
         }
 };
 
-// 75806, 85043, 85416 - Grand Crusader
-class spell_pal_grand_crusader : public SpellScriptLoader
-{
-    public:
-        spell_pal_grand_crusader() : SpellScriptLoader("spell_pal_grand_crusader") { }
-
-        class spell_pal_grand_crusader_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_pal_grand_crusader_AuraScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
-            {
-                if (!sSpellMgr->GetSpellInfo(SPELL_PALADIN_AVENGER_S_SHIELD))
-                    return false;
-                return true;
-            }
-
-            void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-            {
-                if (Unit* caster = GetCaster())
-                    caster->ToPlayer()->RemoveSpellCooldown(SPELL_PALADIN_AVENGER_S_SHIELD, true);
-            }
-
-            void Register() OVERRIDE
-            {
-                OnEffectApply += AuraEffectApplyFn(spell_pal_grand_crusader_AuraScript::HandleApply, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
-            }
-        };
-
-        AuraScript* GetAuraScript() const OVERRIDE
-        {
-            return new spell_pal_grand_crusader_AuraScript();
-        }
-};
-
 // 89906 - Judgements of the Bold
 class spell_pal_judgements_of_the_bold : public SpellScriptLoader
 {
@@ -1631,7 +1596,6 @@ void AddSC_paladin_spell_scripts()
     new spell_pal_guardian_ancient_kings();
     new spell_pal_speed_of_light();
     new spell_pal_shield_of_the_righteous();
-    new spell_pal_grand_crusader();
     new spell_pal_judgements_of_the_bold();
     new spell_pal_inquisiton();
     new spell_pal_judgement();

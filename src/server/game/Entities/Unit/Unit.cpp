@@ -6943,6 +6943,24 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
                         if (GetStat(STAT_SPIRIT)   > stat) { trigger_spell_id = 60235;                               }
                         break;
                     }
+                    case 86303: //Reactive Barrier rank 1
+                    {
+                    if(!roll_chance_i(50))
+                        return false;
+                        if(GetHealth() > CountPctFromMaxHealth(50))
+                            return false;
+                        CastSpell(this,86347,true);
+                        CastSpell(this,11426,false);
+                    return true;
+                    }
+                    case 86304: //Reactive Barrier rank 2
+                    {
+                    if(GetHealth() > CountPctFromMaxHealth(50))
+                        return false;
+                        CastSpell(this,86347,true);
+                        CastSpell(this,11426,false);
+                    return true;
+                    }
                     case 64568:             // Blood Reserve
                     {
                         if (HealthBelowPctDamaged(35, damage))

@@ -572,7 +572,8 @@ class spell_sha_focused_insight : public SpellScriptLoader
             void HandleEffectProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
             {
                 PreventDefaultAction();
-                int32 basePoints0 = aurEff->GetAmount();
+				int32 manacost = aurEff->GetSpellInfo()->ManaCostPercentage;
+                int32 basePoints0 = manacost * aurEff->GetAmount();
                 int32 basePoints1 = aurEff->GetSpellInfo()->Effects[EFFECT_1].CalcValue();
 
                 GetTarget()->CastCustomSpell(GetTarget(), SPELL_SHAMAN_FOCUSED_INSIGHT, &basePoints0, &basePoints1, &basePoints1, true, NULL, aurEff);
@@ -1213,7 +1214,7 @@ class spell_sha_thunderstorm : public SpellScriptLoader
         }
 };
 
-// 73680 - Unleashed elements
+// 73680 Unleash Elements
 class spell_sha_unleash_elements : public SpellScriptLoader
 {
 public:
@@ -1222,12 +1223,13 @@ public:
     class spell_sha_unleash_elements_SpellScript : public SpellScript
     {
         PrepareSpellScript(spell_sha_unleash_elements_SpellScript)
-        bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
+        bool Validate(SpellInfo const* /*spellInfo*/)
         {
-            if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_UNLEASH_ELEMENTS))
+            if (!sSpellStore.LookupEntry(SPELL_SHAMAN_UNLEASH_ELEMENTS))
                 return false;
-           return true;
+            return true;
         }
+
         void HandleDummy(SpellEffIndex /*effIndex*/)
         {
             Unit* caster = GetCaster();
@@ -1238,7 +1240,7 @@ public:
                 return;
 
             if(!GetExplTargetUnit())
-               return;
+                return;
 
             Item *weapons[2];
             weapons[0] = plr->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
@@ -1249,7 +1251,7 @@ public:
                     continue;
 
                 uint32 unleashSpell = 0;
-                Unit *target = GetExplTargetUnit();
+                Unit* target = GetExplTargetUnit();
                 bool hostileTarget = plr->IsHostileTo(target);
                 bool hostileSpell = true;
 
@@ -1272,6 +1274,7 @@ public:
                         unleashSpell = 73681; // Unleash Wind
                         break;
                 }
+
                 if(hostileSpell && !hostileTarget)
                     return; // don't allow to attack non-hostile targets. TODO: check this before cast
 
@@ -1280,22 +1283,22 @@ public:
 
                 if(unleashSpell)
                 {
-                    caster->CastSpell(target, unleashSpell, true);
+                    plr->CastSpell(target, unleashSpell, true);
                 }
             }
         }
 
-        void Register() OVERRIDE
+        void Register()
         {
-                        OnEffectHit += SpellEffectFn(spell_sha_unleash_elements_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+          OnEffectLaunch += SpellEffectFn(spell_sha_unleash_elements_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
         }
     };
-    SpellScript* GetSpellScript() const OVERRIDE
+
+    SpellScript* GetSpellScript() const
     {
         return new spell_sha_unleash_elements_SpellScript();
     }
 };
-
 
 // 51562 - Tidal Waves
 class spell_sha_tidal_waves : public SpellScriptLoader
