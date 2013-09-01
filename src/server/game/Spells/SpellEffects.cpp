@@ -582,15 +582,6 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                 }
                 break;
             }
-            case SPELLFAMILY_SHAMAN:
-            {
-                //Enchancement mastery
-                if((m_spellInfo->SchoolMask & SPELL_SCHOOL_MASK_NATURE) || (m_spellInfo->SchoolMask & SPELL_SCHOOL_MASK_FIRE) || (m_spellInfo->SchoolMask & SPELL_SCHOOL_MASK_FROST))
-                {
-                    //Increase fire, frost, nature damage 2.5% per mastery point - the 20% base increase is already handled
-                    damage += (damage * 0.25f) * m_caster->GetFloatValue(PLAYER_MASTERY);
-                }
-            }
 			case SPELLFAMILY_PALADIN:
             {
                 switch(m_spellInfo->Id)
@@ -1475,13 +1466,6 @@ void Spell::EffectHeal(SpellEffIndex /*effIndex*/)
             addhealth = caster->SpellHealingBonusDone(unitTarget, m_spellInfo, addhealth, HEAL);
 
         addhealth = unitTarget->SpellHealingBonusTaken(caster, m_spellInfo, addhealth, HEAL);
-
-        if(caster->HasAura(77226)) // Deep Healing
-        {
-            float mastery = caster->GetFloatValue(PLAYER_MASTERY);
-            float healthPct = unitTarget->GetHealthPct();
-            addhealth += int32(addhealth * (((100 - (healthPct - 1)) / 100) * (mastery * 0.03f)));
-        }
 		
 		// Remove Grievious bite if fully healed
         if (unitTarget->HasAura(48920) && (unitTarget->GetHealth() + addhealth >= unitTarget->GetMaxHealth()))
