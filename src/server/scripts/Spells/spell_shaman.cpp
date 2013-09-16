@@ -572,8 +572,7 @@ class spell_sha_focused_insight : public SpellScriptLoader
             void HandleEffectProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
             {
                 PreventDefaultAction();
-				int32 manacost = aurEff->GetSpellInfo()->ManaCostPercentage;
-                int32 basePoints0 = manacost * aurEff->GetAmount();
+                int32 basePoints0 = aurEff->GetAmount();
                 int32 basePoints1 = aurEff->GetSpellInfo()->Effects[EFFECT_1].CalcValue();
 
                 GetTarget()->CastCustomSpell(GetTarget(), SPELL_SHAMAN_FOCUSED_INSIGHT, &basePoints0, &basePoints1, &basePoints1, true, NULL, aurEff);
@@ -684,6 +683,7 @@ class spell_sha_healing_stream_totem : public SpellScriptLoader
             return new spell_sha_healing_stream_totem_SpellScript();
         }
 };
+
 
 // 32182 - Heroism
 /// Updated 4.3.4

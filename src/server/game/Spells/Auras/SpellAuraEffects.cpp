@@ -1063,7 +1063,7 @@ void AuraEffect::PeriodicTick(AuraApplication * aurApp, Unit* caster) const
             HandlePeriodicTriggerSpellWithValueAuraTick(target, caster);
             break;
         case SPELL_AURA_PERIODIC_DAMAGE:
-        case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
+        case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:			
             HandlePeriodicDamageAurasTick(target, caster);
             break;
         case SPELL_AURA_PERIODIC_LEECH:
@@ -5396,7 +5396,7 @@ void AuraEffect::HandlePeriodicDummyAuraTick(Unit* target, Unit* caster) const
                 {
                     if(GetEffIndex() == 0)
 					{
-						int32 bp = caster->GetHealingDoneInPastSecs(1);
+						int32 bp = GetAmount();
 						caster->CastCustomSpell(target,81269,&bp,NULL,NULL,true);
 					}
 					break;

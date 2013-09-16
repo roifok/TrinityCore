@@ -5652,6 +5652,52 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
             } 
             switch (dummySpell->Id)
             {
+                // Train of Thought
+                case 92295:
+                case 92297:
+                    if (procSpell->Id == 585)
+                    {
+                        if (Player* caster = triggeredByAura->GetCaster()->ToPlayer())
+                        {
+                            if (caster->HasSpellCooldown(47540))
+                            {
+                                uint32 newCooldownDelay = caster->GetSpellCooldownDelay(47540);
+                                if (newCooldownDelay <= 0.5)
+                                    newCooldownDelay = 0;
+                                else
+                                    newCooldownDelay -= 0.5;
+
+                                caster->AddSpellCooldown(47540, 0, uint32(time(NULL) + newCooldownDelay));
+                                WorldPacket data(SMSG_MODIFY_COOLDOWN, 4 + 8 + 4);
+                                data << uint32(47540);
+                                data << uint64(caster->GetGUID());
+                                data << int32(-500);
+                                caster->GetSession()->SendPacket(&data);
+                            }
+                        }
+                    }
+                    if (procSpell->Id == 2060)
+                    {
+                        if (Player* caster = triggeredByAura->GetCaster()->ToPlayer())
+                        {
+                            if (caster->HasSpellCooldown(89485))
+                            {
+                                uint32 newCooldownDelay = caster->GetSpellCooldownDelay(89485);
+                                if (newCooldownDelay <= 5)
+                                    newCooldownDelay = 0;
+                                else 
+                                    newCooldownDelay -= 5;
+
+                                caster->AddSpellCooldown(89485, 0, uint32(time(NULL) + newCooldownDelay));
+                                WorldPacket data(SMSG_MODIFY_COOLDOWN, 4 + 8 + 4);
+                                data << uint32(89485); // Spell ID
+                                data << uint64(caster->GetGUID()); // Player GUID
+                                data << int32(-5000); // Cooldown mod in milliseconds
+                                caster->GetSession()->SendPacket(&data);
+								return true;
+							}
+						}
+					}
                 // Priest Tier 6 Trinket (Ashtongue Talisman of Acumen)
                 case 40438:
                 {
@@ -6393,34 +6439,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     return false;
                 }
                 break;
-				case 51483: // Earth's Grasp (Rank 1)
-                case 51485: // Earth's Grasp (Rank 2)
-                {
-                    // Earthbind Totem summon only
-                    if (procSpell->Id != 2484)
-                        return false;
-
-                    /*float chance = (float)triggerAmount;
-                    if (!roll_chance_f(chance))
-                        return false;*/
-
-                    triggered_spell_id = 64695;
-                break;                
-              }
-            }
-			// Storm, Earth and Fire
-            if (dummySpell->SpellIconID == 3063)
-            {
-                // Earthbind Totem summon only
-                if (procSpell->Id != 2484)
-                    return false;
-
-              /*  float chance = (float)triggerAmount;
-                if (!roll_chance_f(chance))
-                    return false;*/
-
-                triggered_spell_id = 64695;
-                break;
             }
             // Flametongue Weapon (Passive)
             if (dummySpell->SpellFamilyFlags[0] & 0x200000)
@@ -6489,25 +6507,22 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 }
                 return true;
             }
-            break;
-            switch (dummySpell->SpellIconID)
+            
+			// Marked for Death
+			if (dummySpell->SpellIconID == 3524) 
             {
-                case 3524: // Marked for Death
-                {
                     if(!roll_chance_i(triggerAmount))
                         return false;
                         
                     triggered_spell_id = 88691;
                     target = victim;
                     break;
-                }
             }
-            break;
         }
 		case SPELLFAMILY_WARRIOR:
         {
             // Strikes of Opportunity
-            if (dummySpell->Id == 76838)
+            if (dummySpell->SpellIconID == 243)
             {
                 if(AuraEffect const * aurEff = ToPlayer()->GetAuraEffect(76838,1))
                 {
@@ -6734,8 +6749,40 @@ bool Unit::HandleAuraProc(Unit* victim, uint32 /*damage*/, Aura* triggeredByAura
                     break;
                 }
             }
-
             break;
+		case SPELLFAMILY_PRIEST:
+        {
+            if (dummySpell->Id == 14751) // Chakra
+            {
+                switch (procSpell->Id)
+                {
+                    case 2050:  // Heal
+                    case 2060:  // Greater heal
+                    case 2061:  // Flash Heal
+                    case 32546: // Binding Heal
+                    {
+                        *handled = true;
+                        CastSpell(this, 81208, true);  // Chakra: Serenity
+                        return true;
+                    }
+                    case 33076: // Prayer of Mending
+                    case 596:   // Prayer of Healing
+                    {
+                        *handled = true;
+                        CastSpell(this, 81206, true);  // Chakra: Sanctuary
+                        return true;
+                    }
+                    case 585:   // Smite
+                    case 73510: // Mind Spike
+                    {
+                        *handled = true;
+                        CastSpell(this, 81209, true);  // Chakra: Chastise
+                        return true;
+                    }
+                }
+            }
+            break;
+        }
         case SPELLFAMILY_PALADIN:
         {
             // Judgements of the Just
@@ -7170,17 +7217,7 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
                     trigger_spell_id = 23552;
                     target = victim;
                     break;						     
-                    }
-					// Nature's Guardian Rank 1, Rank 2, Rank 3
-                    case 30881: 
-                    case 30883: 
-                    case 30884: 
-                    {
-                    if (!HealthBelowPctDamaged(30, damage))
-                    return false;
-                    basepoints0 = int32(CountPctFromMaxHealth(triggerAmount));
-                    break;
-                    }                   
+                    }					                
                 }	
 				break;
 			}
@@ -7457,14 +7494,24 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
             basepoints0 = CalculatePct(triggerAmount, GetTotalAttackPowerValue(BASE_ATTACK));
             break;
         }
-        /*// Efflorescence
+        // Efflorescence
         case 34151:
         case 81274:
         case 81275:
         {
             basepoints0 = CalculatePct(triggerAmount, int32(damage));
             break;
-        }*/
+        }
+		// Chakra: Serenity should proc only on direct heals
+        case 81208:
+        {
+            for (uint32 i = 0; i < MAX_SPELL_EFFECTS; i++)
+            {
+                if (procSpell->Effects[i].Effect == SPELL_EFFECT_HEAL)
+                    return true;
+            }
+            return false;
+        }
         // Culling the Herd
         case 70893:
         {
@@ -11464,6 +11511,8 @@ void Unit::ModSpellCastTime(SpellInfo const* spellProto, int32 & castTime, Spell
         castTime = int32(float(castTime) * m_modAttackSpeedPct[RANGED_ATTACK]);
     else if (spellProto->SpellVisual[0] == 3881 && HasAura(67556)) // cooking with Chef Hat.
         castTime = 500;
+    if(spellProto->Effects[0].Effect == SPELL_EFFECT_ENCHANT_ITEM || spellProto->Effects[0].Effect == SPELL_EFFECT_APPLY_GLYPH || spellProto->Effects[0].Effect == SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC)
+        castTime = 1;
 }
 
 DiminishingLevels Unit::GetDiminishing(DiminishingGroup group)

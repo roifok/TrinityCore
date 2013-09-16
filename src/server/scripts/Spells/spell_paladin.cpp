@@ -697,7 +697,7 @@ class spell_pal_holy_shock : public SpellScriptLoader
                          {
                              if (caster->ToPlayer()->GetPrimaryTalentTree(caster->ToPlayer()->GetActiveSpec()) == TALENT_TREE_PALADIN_HOLY)
                              {
-                                 int32 bp0 = int32(caster->GetHealingDoneInPastSecs(15) * (16.0f + (1.5f * caster->ToPlayer()->GetFloatValue(PLAYER_MASTERY))) /100);
+                                 int32 bp0 = int32(caster->GetHealingDoneInPastSecs(15) * (12.0f + (1.5f * caster->ToPlayer()->GetFloatValue(PLAYER_MASTERY))) /100);
                                  int32 bp1 = int32(caster->ToPlayer()->GetMaxHealth()/3);
 
                                  if (bp0 > bp1)

@@ -79,6 +79,12 @@ _flags(AFLAG_NONE), _effectsToApply(effMask), _needClientUpdate(false)
             TC_LOG_DEBUG(LOG_FILTER_SPELLS_AURAS, "Aura: %u Effect: %d could not find empty unit visible slot", GetBase()->GetId(), GetEffectMask());
     }
 
+	if ((target->HasAura(89488)) && GetBase()->GetId() == 89485) // strength of soul
+        caster->CastSpell(caster, 96266, true);
+
+    if ((target->HasAura(89489)) && GetBase()->GetId() == 89485) // strength of soul
+        caster->CastSpell(caster, 96267, true);
+
     _InitFlags(caster, effMask);
 }
 

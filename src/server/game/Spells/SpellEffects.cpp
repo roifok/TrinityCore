@@ -689,6 +689,21 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                 }
             }
             break;
+		case SPELLFAMILY_MAGE:
+            {
+                switch (m_spellInfo->Id)
+                {
+                    case 82731: // Flame Orb
+                       if (m_caster->GetTypeId() == TYPEID_PLAYER)                         
+                                    m_caster->CastSpell(m_caster, 84765, true); // Summon Flame Orb
+                       break;
+                    case 92283: // Frostfire Orb
+                       if (m_caster->GetTypeId() == TYPEID_PLAYER)                         
+                                m_caster->CastSpell(m_caster, 84714, true); // Summon Frostfire Orb
+                        break;
+                }
+                break;
+            }
         case SPELLFAMILY_DEATHKNIGHT:
             switch (m_spellInfo->Id)
             {
@@ -1390,6 +1405,23 @@ void Spell::EffectHeal(SpellEffIndex /*effIndex*/)
 
         int32 addhealth = damage;
 
+		// Illuminated Healing
+         if(m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN)
+         {
+            if (caster->ToPlayer()->GetPrimaryTalentTree(caster->ToPlayer()->GetActiveSpec()) == TALENT_TREE_PALADIN_HOLY)
+            {
+                int32 bp0 = int32(caster->GetHealingDoneInPastSecs(15) * (12.0f + (1.5f * caster->ToPlayer()->GetFloatValue(PLAYER_MASTERY))) /100);
+                int32 bp1 = int32(caster->ToPlayer()->GetMaxHealth()/3);
+
+                if (bp0 > bp1)
+                {
+                caster->CastCustomSpell(caster, 86273, &bp1, NULL, NULL, true);  
+				}
+				else  
+                caster->CastCustomSpell(caster, 86273, &bp0, NULL, NULL, true);                
+            }
+        }        
+
         // Vessel of the Naaru (Vial of the Sunwell trinket)
         if (m_spellInfo->Id == 45064)
         {
@@ -1470,26 +1502,6 @@ void Spell::EffectHeal(SpellEffIndex /*effIndex*/)
 		// Remove Grievious bite if fully healed
         if (unitTarget->HasAura(48920) && (unitTarget->GetHealth() + addhealth >= unitTarget->GetMaxHealth()))
             unitTarget->RemoveAura(48920);
-
-        // Illuminated Healing
-        if (caster->ToPlayer()->HasAuraType(SPELL_AURA_MASTERY))
-        {
-            if (caster->ToPlayer()->getClass() == CLASS_PALADIN)
-            {
-                if (caster->ToPlayer()->GetPrimaryTalentTree(caster->ToPlayer()->GetActiveSpec()) == TALENT_TREE_PALADIN_HOLY)
-                {
-                                 int32 bp0 = int32(caster->GetHealingDoneInPastSecs(15) * (16.0f + (1.5f * caster->ToPlayer()->GetFloatValue(PLAYER_MASTERY))) /100);
-                                 int32 bp1 = int32(caster->ToPlayer()->GetMaxHealth()/3);
-
-                                 if (bp0 > bp1)
-								 {
-                                    caster->CastCustomSpell(caster, 86273, &bp1, NULL, NULL, true);  
-								 }
-								 else  
-                                    caster->CastCustomSpell(caster, 86273, &bp0, NULL, NULL, true);                
-				}
-            }
-        }
 
         m_damage -= addhealth;
     }
@@ -3961,6 +3973,35 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
             }
             break;
         }
+
+        case SPELLFAMILY_PRIEST:
+        {
+				if(m_spellInfo->Id == 89490) // Strenght of Soul
+				{
+					if(m_caster->HasAura(89488)) // Strenght of Soul rank 1
+					{
+						if(Aura* aur = unitTarget->GetAura(6788))
+						{
+							if(aur->GetDuration() >= 3000)
+								aur->SetDuration(aur->GetDuration() - 2000,true);
+							else
+								unitTarget->RemoveAurasDueToSpell(6788);
+						}
+					}
+					if(m_caster->HasAura(89489)) // Strenght of Soul rank 2
+					{
+						if(Aura* aur = unitTarget->GetAura(6788))
+						{
+							if(aur->GetDuration() >= 5000)
+								aur->SetDuration(aur->GetDuration() - 4000,true);
+							else
+								unitTarget->RemoveAurasDueToSpell(6788);
+						}
+					}
+				}
+		   } 
+		break;
+
         case SPELLFAMILY_DEATHKNIGHT:
         {
             // Pestilence
@@ -4032,10 +4073,15 @@ void Spell::EffectAddComboPoints(SpellEffIndex /*effIndex*/)
     if (!m_caster->m_movedPlayer)
         return;
 
-    if (damage <= 0)
-        return;
-
-    m_caster->m_movedPlayer->AddComboPoints(unitTarget, damage, this);
+    Player* plr = m_caster->m_movedPlayer;
+    if (damage > 0)
+        plr->AddComboPoints(unitTarget, damage, this);
+    else
+    {
+        // Rogue: Redirect
+        if (GetSpellInfo()->Id == 73981 && plr->GetComboPoints() > 0 && plr->GetComboTarget())
+            plr->AddComboPoints(unitTarget, plr->GetComboPoints(), this);
+    }
 }
 
 void Spell::EffectDuel(SpellEffIndex effIndex)
