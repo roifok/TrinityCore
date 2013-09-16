@@ -990,12 +990,15 @@ class npc_jaina_or_sylvanas_escape_hor : public CreatureScript
                             lichking->SetReactState(REACT_PASSIVE);
                             lichking->Attack(me,true);
                         }
-                        if (Creature* walltarget = me->SummonCreature(NPC_ICE_WALL, IceWalls[_icewall].GetPositionX(), IceWalls[_icewall].GetPositionY(), IceWalls[_icewall].GetPositionZ(), IceWalls[_icewall].GetOrientation(), TEMPSUMMON_MANUAL_DESPAWN, 720000))
+                        if (_icewall < 4)
                         {
-                            _walltargetGUID = walltarget->GetGUID();
-                            walltarget->AI()->DoCast(walltarget, SPELL_SUMMON_ICE_WALL);
-                            walltarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-                            me->Attack(walltarget,false);
+                            if (Creature* walltarget = me->SummonCreature(NPC_ICE_WALL, IceWalls[_icewall].GetPositionX(), IceWalls[_icewall].GetPositionY(), IceWalls[_icewall].GetPositionZ(), IceWalls[_icewall].GetOrientation(), TEMPSUMMON_MANUAL_DESPAWN, 720000))
+                            {
+                                _walltargetGUID = walltarget->GetGUID();
+                                walltarget->AI()->DoCast(walltarget, SPELL_SUMMON_ICE_WALL);
+                                walltarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+                                me->Attack(walltarget,false);
+                            }
                         }
                         _events.ScheduleEvent(EVENT_ESCAPE_20, 3000);
                         break;
@@ -1016,7 +1019,7 @@ class npc_jaina_or_sylvanas_escape_hor : public CreatureScript
                                     else if (_icewall == 3)
                                         me->AI()->Talk(SAY_JAINA_ESCAPE_5);
                                 }
-                                else if (_instance->GetData(DATA_TEAM_IN_INSTANCE) == ALLIANCE)
+                                else if (_instance->GetData(DATA_TEAM_IN_INSTANCE) == HORDE)
                                 {
                                     if (_icewall == 1)
                                         me->AI()->Talk(SAY_SYLVANAS_ESCAPE_3);
