@@ -1,1 +1,1 @@
-copy /a world\*.sql /b scripts_updates4.sql
+copy /a authup\*.sql /b scripts_updates69.sql

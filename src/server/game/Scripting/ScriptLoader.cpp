@@ -1415,6 +1415,7 @@ void AddBattlegroundScripts()
 /* This is where custom scripts' loading functions should be declared. */
     void AddSC_npc_enchantment();
     void AddSC_Npc_Beastmaster();
+	void AddSC_Professions_NPC();
     void AddSC_TeLe_gossip_codebox();
 	void AddSC_item_reset_talent();
 
@@ -1426,6 +1427,7 @@ void AddCustomScripts()
     /* This is where custom scripts should be added. */
     AddSC_npc_enchantment();
     AddSC_Npc_Beastmaster();
+	AddSC_Professions_NPC();
     AddSC_TeLe_gossip_codebox();
 	AddSC_item_reset_talent();
 #endif
