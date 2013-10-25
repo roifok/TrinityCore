@@ -1594,10 +1594,10 @@ void AddSC_paladin_spell_scripts()
     new spell_pal_templar_s_verdict();
     new spell_pal_seal_of_righteousness();
     new spell_pal_guardian_ancient_kings();
-    new spell_pal_speed_of_light();
     new spell_pal_shield_of_the_righteous();
     new spell_pal_judgements_of_the_bold();
     new spell_pal_inquisiton();
     new spell_pal_judgement();
 	new spell_pal_word_of_glory();
+	new spell_pal_speed_of_light();
 }

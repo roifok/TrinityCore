@@ -6488,8 +6488,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 return true;
             }
         break;
-        }
-
+        }	
         case SPELLFAMILY_HUNTER:
         {
 			// Wild Quiver
@@ -6497,7 +6496,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
             {
                 if(AuraEffect const * aurEff = ToPlayer()->GetAuraEffect(76659,1))
                 {
-                    if (!procSpell || GetTypeId() != TYPEID_PLAYER || !victim)
+                    if (!procSpell || GetTypeId() != TYPEID_PLAYER || !target)
                         return false;
 
                     float mastery = ToPlayer()->GetFloatValue(PLAYER_MASTERY);
@@ -6519,24 +6518,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     break;
             }
         }
-		case SPELLFAMILY_WARRIOR:
-        {
-            // Strikes of Opportunity
-            if (dummySpell->SpellIconID == 243)
-            {
-                if(AuraEffect const * aurEff = ToPlayer()->GetAuraEffect(76838,1))
-                {
-                    if (!procSpell || GetTypeId() != TYPEID_PLAYER || !victim)
-                        return false;
-
-                    uint32 multi = aurEff->GetAmount() / 100;
-                    if (roll_chance_f(ToPlayer()->GetFloatValue(PLAYER_MASTERY) * multi))
-                        CastSpell(victim, 76858, true, castItem, triggeredByAura);
-                }
-                return true;
-            } 
-            break;
-        }
+		
         case SPELLFAMILY_DEATHKNIGHT:
         {
             // Blood-Caked Blade
@@ -6656,6 +6638,15 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
         default:
             break;
     }
+
+	// Warrior mastery ( arm )
+        if (dummySpell->Id == 76838)
+            if (roll_chance_i(GetAura(76838)->GetEffect(0)->GetAmount()))
+                if (!ToPlayer()->HasSpellCooldown(76858))
+                {
+                    CastSpell(victim, 76858, true);
+                    ToPlayer()->AddSpellCooldown(76858, 0, time(NULL) + 2);
+                }	
 
     // if not handled by custom case, get triggered spell from dummySpell proto
     if (!triggered_spell_id)

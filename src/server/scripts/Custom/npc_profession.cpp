@@ -174,7 +174,8 @@ class Professions_NPC : public CreatureScript
 												{
                                                 CompleteLearnProfession(pPlayer, _creature, SKILL_ALCHEMY);
 												pPlayer->PlayerTalkClass->SendCloseGossip();
-												}break;
+												}
+												break;
 
                                         case 2:
                                                 if(pPlayer->HasSkill(SKILL_BLACKSMITHING))
@@ -186,7 +187,8 @@ class Professions_NPC : public CreatureScript
 												{
                                                 CompleteLearnProfession(pPlayer, _creature, SKILL_BLACKSMITHING);
 												pPlayer->PlayerTalkClass->SendCloseGossip();
-												}break;
+												}
+												break;
                                         case 3:
                                                 if(pPlayer->HasSkill(SKILL_LEATHERWORKING))
                                                 {
@@ -197,7 +199,8 @@ class Professions_NPC : public CreatureScript
 												{
                                                 CompleteLearnProfession(pPlayer, _creature, SKILL_LEATHERWORKING);
                                                 pPlayer->PlayerTalkClass->SendCloseGossip();
-												}break;
+												}
+												break;
                                          case 4:
                                                 if(pPlayer->HasSkill(SKILL_TAILORING))
                                                 {
@@ -208,7 +211,8 @@ class Professions_NPC : public CreatureScript
 												{
                                                 CompleteLearnProfession(pPlayer, _creature, SKILL_TAILORING);
 												pPlayer->PlayerTalkClass->SendCloseGossip();
-												}break;
+												}
+												break;
                                         case 5:
                                                 if(pPlayer->HasSkill(SKILL_ENGINEERING))
                                                 {
@@ -219,7 +223,8 @@ class Professions_NPC : public CreatureScript
 												{
                                                 CompleteLearnProfession(pPlayer, _creature, SKILL_ENGINEERING);
 												pPlayer->PlayerTalkClass->SendCloseGossip();
-												}break;
+												}
+												break;
 												
                                         case 6:
                                                 if(pPlayer->HasSkill(SKILL_ENCHANTING))
@@ -231,7 +236,8 @@ class Professions_NPC : public CreatureScript
 												{
                                                 CompleteLearnProfession(pPlayer, _creature, SKILL_ENCHANTING);
                                                 pPlayer->PlayerTalkClass->SendCloseGossip();
-												}break;
+												}
+												break;
                                         case 7:
                                                 if(pPlayer->HasSkill(SKILL_JEWELCRAFTING))
                                                 {
@@ -242,7 +248,8 @@ class Professions_NPC : public CreatureScript
 												{
                                                 CompleteLearnProfession(pPlayer, _creature, SKILL_JEWELCRAFTING);
                                                 pPlayer->PlayerTalkClass->SendCloseGossip();
-												}break;
+												}
+												break;
                                         case 8:
                                                 if(pPlayer->HasSkill(SKILL_INSCRIPTION))
                                                 {
@@ -253,7 +260,8 @@ class Professions_NPC : public CreatureScript
 												{
                                                 CompleteLearnProfession(pPlayer, _creature, SKILL_INSCRIPTION);
                                                 pPlayer->PlayerTalkClass->SendCloseGossip();
-												}break;
+												}
+												break;
                                         case 9:
                                                 if(pPlayer->HasSkill(SKILL_COOKING))
                                                 {
@@ -264,7 +272,8 @@ class Professions_NPC : public CreatureScript
 												{
                                                 CompleteLearnProfession(pPlayer, _creature, SKILL_COOKING);
                                                 pPlayer->PlayerTalkClass->SendCloseGossip();
-												}break;
+												}
+												break;
                                         case 10:
                                                 if(pPlayer->HasSkill(SKILL_FIRST_AID))
                                                 {
@@ -275,7 +284,8 @@ class Professions_NPC : public CreatureScript
 												{
                                                 CompleteLearnProfession(pPlayer, _creature, SKILL_FIRST_AID);
                                                 pPlayer->PlayerTalkClass->SendCloseGossip();
-												}break;
+												}
+												break;
 										case 11:
 											if(pPlayer->HasSkill(SKILL_HERBALISM))
 											{
@@ -286,7 +296,8 @@ class Professions_NPC : public CreatureScript
 											{
 											CompleteLearnProfession(pPlayer, _creature, SKILL_HERBALISM);
 											pPlayer->PlayerTalkClass->SendCloseGossip();
-											}break;
+											}
+											break;
 										case 12:
 											if(pPlayer->HasSkill(SKILL_SKINNING))
 											{
@@ -297,7 +308,8 @@ class Professions_NPC : public CreatureScript
 											{
 											CompleteLearnProfession(pPlayer, _creature, SKILL_SKINNING);
 											pPlayer->PlayerTalkClass->SendCloseGossip();
-											}break;
+											}
+											break;
 										case 13:
 											if(pPlayer->HasSkill(SKILL_MINING))
 											{
@@ -308,7 +320,8 @@ class Professions_NPC : public CreatureScript
 											{
 											CompleteLearnProfession(pPlayer, _creature, SKILL_MINING);
 											pPlayer->PlayerTalkClass->SendCloseGossip();
-											}break;
+											}
+											break;
                                 }
 
         

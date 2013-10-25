@@ -64,6 +64,7 @@ enum WarriorSpells
     SPELL_WARRIOR_IMPROVED_HAMSTRING_R2             = 12668,
     SPELL_WARRIOR_IMPROVED_HAMSTRING_R1             = 12289,
     SPELL_WARRIOR_HAMSTRING                         = 1715,
+    SPELL_WARRIOR_STRIKES_OF_OPPORTUNITY            = 76838,
 };
 
 enum WarriorSpellIcons
@@ -1265,5 +1266,5 @@ void AddSC_warrior_spell_scripts()
     new spell_warr_vigilance_trigger();
     new spell_warr_heroic_leap();
     new spell_warr_thunderclap();
-    /*new spell_warr_improved_hamstring();*/
+    new spell_warr_improved_hamstring();
 }

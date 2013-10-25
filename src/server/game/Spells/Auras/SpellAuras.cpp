@@ -1628,27 +1628,6 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                     GetEffect(0)->SetAmount(int32(caster->GetFloatValue(PLAYER_MASTERY)*1.5f));
                     break;
                 }
-                case 1715: // Hamstring
-                {
-                    if(caster->HasAura(12668)) // Improved Hamstring rank 2
-                    {
-                    if(target->HasAura(1715)) // If he already has hamstring
-                        {
-                        caster->CastSpell(target,23694,false); // Not triggered
-                        if(!caster->ToPlayer()->HasSpellCooldown(23694))
-                            caster->ToPlayer()->AddSpellCooldown(23694,0,uint32(time(NULL) + 30000)); // Add 30 seconds cooldown
-                        }
-                    }
-                    if(caster->HasAura(12289)) // Improved Hamstring rank 1
-                    {
-                        if(target->HasAura(1715)) // If he already has hamstring
-                        {
-                        caster->CastSpell(target,23694,false); // Not triggered
-                        if(!caster->ToPlayer()->HasSpellCooldown(23694))
-                            caster->ToPlayer()->AddSpellCooldown(23694,0,uint32(time(NULL) + 60000)); // Add 60 seconds cooldown
-                        }
-                    }
-                }
             }
             break;
         }

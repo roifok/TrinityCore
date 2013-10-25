@@ -704,6 +704,7 @@ void Spell::EffectDummy(SpellEffIndex effIndex)
                 }
                 break;
             }
+
         case SPELLFAMILY_DEATHKNIGHT:
             switch (m_spellInfo->Id)
             {

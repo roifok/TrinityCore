@@ -354,6 +354,7 @@ void AddSC_boss_earthrager_ptah();
 void AddSC_boss_anraphet();
 void AddSC_instance_firelands();
 void AddSC_boss_alysrazor();
+void AddSC_boss_ragnaros_cata();
 
 void AddSC_ashenvale();
 void AddSC_azshara();
@@ -1081,6 +1082,8 @@ void AddKalimdorScripts()
 
     AddSC_instance_firelands();
     AddSC_boss_alysrazor();
+    AddSC_boss_ragnaros_cata();
+
 #endif
 }
 
@@ -1416,9 +1419,9 @@ void AddBattlegroundScripts()
     void AddSC_npc_enchantment();
     void AddSC_Npc_Beastmaster();
 	void AddSC_Professions_NPC();
-    void AddSC_TeLe_gossip_codebox();
+    void AddSC_npc_teleport();
 	void AddSC_item_reset_talent();
-
+	void AddSC_Title_NPC();
 #endif
 
 void AddCustomScripts()
@@ -1428,7 +1431,8 @@ void AddCustomScripts()
     AddSC_npc_enchantment();
     AddSC_Npc_Beastmaster();
 	AddSC_Professions_NPC();
-    AddSC_TeLe_gossip_codebox();
+    AddSC_npc_teleport();  
 	AddSC_item_reset_talent();
+	AddSC_Title_NPC();
 #endif
 }

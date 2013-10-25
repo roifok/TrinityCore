@@ -1,303 +1,441 @@
 #include "ScriptPCH.h"
- 
-// Teleport data
- 
-struct Eric
-{
-        uint32 menu_id, next_menu_id;
-        uint8 icon;
-        std::string name;
-        uint32 cost;
-        uint8 level, faction; // 0 Both, 1 Horde, 2 Ally
-        uint32 map;
-        float x, y, z, o;
-};
-typedef struct Eric Rochet2;
- 
-//      {menu_id, next_menu_id, icon, name, cost, level, faction, map, x, y, z, o}
-Rochet2 TeLe [] = // key = i & Key
-{
-        {1,     0,      2,      "Stormwind",    0,      0,      2,      0,      -8842.09f,      626.358f,       94.0867f,       3.61363f},
-        {1,     0,      2,      "Orgrimmar",    0,      0,      1,      1,      1601.08f,       -4378.69f,      20.9846f,        2.14362f},
-        {1,     0,      2,      "Darnassus",    0,      0,      2,      1,      9869.91f,       2493.58f,       1315.88f,       2.78897f},
-        {1,     0,      2,      "Ironforge",    0,      0,      2,      0,      -4900.47f,      -962.585f,      501.455f,       5.40538f},
-        {1,     0,      2,      "Exodar",       0,      0,      2,      530,    -3864.92f,      -11643.7f,      -137.644f,      5.50862f},
-        {1,     0,      2,      "Thunder bluff",        0,      0,      1,      1,      -1274.45f,      71.8601f,       128.159f,       2.80623f},
-        {1,     0,      2,      "Undercity",    0,      0,      1,      0,      1633.75f,       240.167f,       -43.1034f,      6.26128f},
-        {1,     0,      2,      "Silvermoon city",      0,      0,      1,      530,    9738.28f,       -7454.19f,      13.5605f,       0.043914f},
-        {1,     0,      2,      "Dalaran",      0,      67,     0,      571,    5809.55f,       503.975f,       657.526f,       2.38338f},
-        {1,     0,      2,      "Shattrath",    0,      57,     0,      530,    -1887.62f,      5359.09f,       -12.4279f,      4.40435f},
-        {1,     0,      2,      "Booty bay",    0,      30,     0,      0,      -14281.9f,      552.564f,       8.90422f,       0.860144f},
-        {1,     0,      2,      "Gurubashi arena",      0,      30,     0,      0,      -13181.8f,      339.356f,       42.9805f,       1.18013f},
-        {1,     6,      3,      "Eastern Kingdoms",     0,      0,      0,      0,      0,      0,      0,      0},
-        {1,     7,      3,      "Kalimdor",     0,      0,      0,      0,      0,      0,      0,      0},
-        {1,     8,      3,      "Outland",      0,      58,     0,      0,      0,      0,      0,      0},
-        {1,     9,      3,      "Northrend",    0,      68,     0,      0,      0,      0,      0,      0},
-        {1,     2,      9,      "Classic Dungeons",     0,      15,     0,      0,      0,      0,      0,      0},
-        {1,     3,      9,      "BC Dungeons",  0,      59,     0,      0,      0,      0,      0,      0},
-        {1,     4,      9,      "Wrath Dungeons",       0,      69,     0,      0,      0,      0,      0,      0},
-        {1,     5,      9,      "Raid Teleports",       0,      57,     0,      0,      0,      0,      0,      0},
- 
-        {2,     0,      2,      "Gnomeregan",   0,      25,     2,      0,      -5163.54f,      925.423f,       257.181f,       1.57423f},
-        {2,     0,      2,      "The Deadmines",        0,      17,     2,      0,      -11209.6f,      1666.54f,       24.6974f,       1.42053f},
-        {2,     0,      2,      "The Stockade", 0,      22,     2,      0,      -8799.15f,      832.718f,       97.6348f,       6.04085f},
-        {2,     0,      2,      "Ragefire Chasm",       0,      15,     1,      1,      1811.78f,       -4410.5f,       -18.4704f,      5.20165f},
-        {2,     0,      2,      "Razorfen Downs",       0,      34,     1,      1,      -4657.3f,       -2519.35f,      81.0529f,       4.54808f},
-        {2,     0,      2,      "Razorfen Kraul",       0,      24,     1,      1,      -4470.28f,      -1677.77f,      81.3925f,       1.16302f},
-        {2,     0,      2,      "Scarlet Monastery",    0,      32,     1,      0,      2873.15f,       -764.523f,      160.332f,       5.10447f},
-        {2,     0,      2,      "Shadowfang Keep",      0,      18,     1,      0,      -234.675f,      1561.63f,       76.8921f,       1.24031f},
-        {2,     0,      2,      "Wailing Caverns",      0,      17,     1,      1,      -731.607f,      -2218.39f,      17.0281f,       2.78486f},
-        {2,     0,      2,      "Blackfathom Deeps",    0,      21,     0,      1,      4249.99f,       740.102f,       -25.671f,       1.34062f},
-        {2,     0,      2,      "Blackrock Depths",     0,      53,     0,      0,      -7179.34f,      -921.212f,      165.821f,       5.09599f},
-        {2,     0,      2,      "Blackrock Spire",      0,      57,     0,      0,      -7527.05f,      -1226.77f,      285.732f,       5.29626f},
-        {2,     0,      2,      "Dire Maul",    0,      55,     0,      1,      -3520.14f,      1119.38f,       161.025f,       4.70454f},
-        {2,     0,      2,      "Maraudon",     0,      45,     0,      1,      -1421.42f,      2907.83f,       137.415f,       1.70718f},
-        {2,     0,      2,      "Scholomance",  0,      55,     0,      0,      1269.64f,       -2556.21f,      93.6088f,       0.620623f},
-        {2,     0,      2,      "Stratholme",   0,      55,     0,      0,      3352.92f,       -3379.03f,      144.782f,       6.25978f},
-        {2,     0,      2,      "Sunken Temple",        0,      47,     0,      0,      -10177.9f,      -3994.9f,       -111.239f,      6.01885f},
-        {2,     0,      2,      "Uldaman",      0,      37,     0,      0,      -6071.37f,      -2955.16f,      209.782f,       0.015708f},
-        {2,     0,      2,      "Zul'Farrak",   0,      35,     0,      1,      -6801.19f,      -2893.02f,      9.00388f,       0.158639f},
-        {2,     1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
- 
-        {3,     0,      2,      "Auchindoun",   0,      64,     0,      530,    -3324.49f,      4943.45f,       -101.239f,      4.63901f},
-        {3,     0,      2,      "Caverns of Time",      0,      66,     0,      1,      -8369.65f,      -4253.11f,      -204.272f,      -2.70526f},
-        {3,     0,      2,      "Coilfang Reservoir",   0,      62,     0,      530,    738.865f,       6865.77f,       -69.4659f,      6.27655f},
-        {3,     0,      2,      "Hellfire Citadel",     0,      59,     0,      530,    -347.29f,       3089.82f,       21.394f,        5.68114f},
-        {3,     0,      2,      "Magisters' Terrace",   0,      70,     0,      530,    12884.6f,       -7317.69f,      65.5023f,       4.799f},
-        {3,     0,      2,      "Tempest Keep", 0,      70,     0,      530,    3100.48f,       1536.49f,       190.3f, 4.62226f},
-        {3,     1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
- 
-        {4,     0,      2,      "Azjol-Nerub",  0,      73,     0,      571,    3707.86f,       2150.23f,       36.76f, 3.22f},
-        {4,     0,      2,      "The Culling of Stratholme",    0,      79,     0,      1,      -8756.39f,      -4440.68f,      -199.489f,      4.66289f},
-        {4,     0,      2,      "Trial of the Champion",        0,      79,     0,      571,    8590.95f,       791.792f,       558.235f,       3.13127f},
-        {4,     0,      2,      "Drak'Tharon Keep",     0,      74,     0,      571,    4765.59f,       -2038.24f,      229.363f,       0.887627f},
-        {4,     0,      2,      "Gundrak",      0,      71,     0,      571,    6722.44f,       -4640.67f,      450.632f,       3.91123f},
-        {4,     0,      2,      "Icecrown Citadel Dungeons",    0,      79,     0,      571,    5643.16f,       2028.81f,       798.274f,       4.60242f},
-        {4,     0,      2,      "The Nexus Dungeons",   0,      71,     0,      571,    3782.89f,       6965.23f,       105.088f,       6.14194f},
-        {4,     0,      2,      "The Violet Hold",      0,      75,     0,      571,    5693.08f,       502.588f,       652.672f,       4.0229f},
-        {4,     0,      2,      "Halls of Lightning",   0,      79,     0,      571,    9136.52f,       -1311.81f,      1066.29f,       5.19113f},
-        {4,     0,      2,      "Halls of Stone",       0,      77,     0,      571,    8922.12f,       -1009.16f,      1039.56f,       1.57044f},
-        {4,     0,      2,      "Utgarde Keep", 0,      69,     0,      571,    1203.41f,       -4868.59f,      41.2486f,       0.283237f},
-        {4,     0,      2,      "Utgarde Pinnacle",     0,      75,     0,      571,    1267.24f,       -4857.3f,       215.764f,       3.22768f},
-        {4,     1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
- 
-        {5,     0,      2,      "Black Temple", 0,      70,     0,      530,    -3649.92f,      317.469f,       35.2827f,       2.94285f},
-        {5,     0,      2,      "Blackwing Lair",       0,      60,     0,      229,    152.451f,       -474.881f,      116.84f,        0.001073f},
-        {5,     0,      2,      "Hyjal Summit", 0,      70,     0,      1,      -8177.89f,      -4181.23f,      -167.552f,      0.913338f},
-        {5,     0,      2,      "Serpentshrine Cavern", 0,      70,     0,      530,    797.855f,       6865.77f,       -65.4165f,      0.005938f},
-        {5,     0,      2,      "Trial of the Crusader",        0,      80,     0,      571,    8515.61f,       714.153f,       558.248f,       1.57753f},
-        {5,     0,      2,      "Gruul's Lair", 0,      70,     0,      530,    3530.06f,       5104.08f,       3.50861f,       5.51117f},
-        {5,     0,      2,      "Magtheridon's Lair",   0,      70,     0,      530,    -336.411f,      3130.46f,       -102.928f,      5.20322f},
-        {5,     0,      2,      "Icecrown Citadel",     0,      80,     0,      571,    5855.22f,       2102.03f,       635.991f,       3.57899f},
-        {5,     0,      2,      "Karazhan",     0,      70,     0,      0,      -11118.9f,      -2010.33f,      47.0819f,       0.649895f},
-        {5,     0,      2,      "Molten Core",  0,      60,     0,      230,    1126.64f,       -459.94f,       -102.535f,      3.46095f},
-        {5,     0,      2,      "Naxxramas",    0,      80,     0,      571,    3668.72f,       -1262.46f,      243.622f,       4.785f},
-        {5,     0,      2,      "Onyxia's Lair",        0,      80,     0,      1,      -4708.27f,      -3727.64f,      54.5589f,       3.72786f},
-        {5,     0,      2,      "Ruins of Ahn'Qiraj",   0,      60,     0,      1,      -8409.82f,      1499.06f,       27.7179f,       2.51868f},
-        {5,     0,      2,      "Sunwell Plateau",      0,      70,     0,      530,    12574.1f,       -6774.81f,      15.0904f,       3.13788f},
-        {5,     0,      2,      "The Eye",      0,      67,     0,      530,    3088.49f,       1381.57f,       184.863f,       4.61973f},
-        {5,     0,      2,      "Temple of Ahn'Qiraj",  0,      60,     0,      1,      -8240.09f,      1991.32f,       129.072f,       0.941603f},
-        {5,     0,      2,      "The Eye of Eternity",  0,      80,     0,      571,    3784.17f,       7028.84f,       161.258f,       5.79993f},
-        {5,     0,      2,      "The Obsidian Sanctum", 0,      80,     0,      571,    3472.43f,       264.923f,       -120.146f,      3.27923f},
-        {5,     0,      2,      "Ulduar",       0,      80,     0,      571,    9222.88f,       -1113.59f,      1216.12f,       6.27549f},
-        {5,     0,      2,      "Vault of Archavon",    0,      80,     0,      571,    5453.72f,       2840.79f,       421.28f,        0.0f},
-        {5,     0,      2,      "Zul'Gurub",    0,      57,     0,      0,      -11916.7f,      -1215.72f,      92.289f,        4.72454f},
-        {5,     0,      2,      "Zul'Aman",     0,      70,     1,      530,    6851.78f,       -7972.57f,      179.242f,       4.64691f},
-        {5,     1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
- 
-        {6,     0,      2,      "Elwynn Forest",        0,      0,      2,      0,      -9449.06f,      64.8392f,       56.3581f,       3.07047f},
-        {6,     0,      2,      "Eversong Woods",       0,      0,      1,      530,    9024.37f,       -6682.55f,      16.8973f,       3.14131f},
-        {6,     0,      2,      "Dun Morogh",   0,      0,      2,      0,      -5603.76f,      -482.704f,      396.98f,        5.23499f},
-        {6,     0,      2,      "Tirisfal Glades",      0,      0,      1,      0,      2274.95f,       323.918f,       34.1137f,       4.24367f},
-        {6,     0,      2,      "Ghostlands",   0,      10,     1,      530,    7595.73f,       -6819.6f,       84.3718f,       2.56561f},
-        {6,     0,      2,      "Loch modan",   0,      10,     2,      0,      -5405.85f,      -2894.15f,      341.972f,       5.48238f},
-        {6,     0,      2,      "Silverpine Forest",    0,      10,     1,      0,      505.126f,       1504.63f,       124.808f,       1.77987f},
-        {6,     0,      2,      "Westfall",     0,      10,     2,      0,      -10684.9f,      1033.63f,       32.5389f,       6.07384f},
-        {6,     0,      2,      "Redridge mountains",   0,      15,     2,      0,      -9447.8f,       -2270.85f,      71.8224f,       0.283853f},
-        {6,     0,      2,      "Duskwood",     0,      18,     2,      0,      -10531.7f,      -1281.91f,      38.8647f,       1.56959f},
-        {6,     0,      2,      "Hillsbrad Foothills",  0,      20,     0,      0,      -385.805f,      -787.954f,      54.6655f,       1.03926f},
-        {6,     0,      2,      "Wetlands",     0,      20,     2,      0,      -3517.75f,      -913.401f,      8.86625f,       2.60705f},
-        {6,     0,      2,      "Alterac Mountains",    0,      30,     0,      0,      275.049f,       -652.044f,      130.296f,       0.502032f},
-        {6,     0,      2,      "Arathi Highlands",     0,      30,     0,      0,      -1581.45f,      -2704.06f,      35.4168f,       0.490373f},
-        {6,     0,      2,      "Stranglethorn Vale",   0,      30,     0,      0,      -11921.7f,      -59.544f,       39.7262f,       3.73574f},
-        {6,     0,      2,      "Badlands",     0,      35,     0,      0,      -6782.56f,      -3128.14f,      240.48f,        5.65912f},
-        {6,     0,      2,      "Swamp of Sorrows",     0,      35,     0,      0,      -10368.6f,      -2731.3f,       21.6537f,       5.29238f},
-        {6,     0,      2,      "The Hinterlands",      0,      40,     0,      0,      112.406f,       -3929.74f,      136.358f,       0.981903f},
-        {6,     0,      2,      "Searing Gorge",        0,      43,     0,      0,      -6686.33f,      -1198.55f,      240.027f,       0.916887f},
-        {6,     0,      2,      "The Blasted Lands",    0,      45,     0,      0,      -11184.7f,      -3019.31f,      7.29238f,       3.20542f},
-        {6,     0,      2,      "Burning Steppes",      0,      50,     0,      0,      -7979.78f,      -2105.72f,      127.919f,       5.10148f},
-        {6,     0,      2,      "Western Plaguelands",  0,      51,     0,      0,      1743.69f,       -1723.86f,      59.6648f,       5.23722f},
-        {6,     0,      2,      "Eastern Plaguelands",  0,      53,     0,      0,      2280.64f,       -5275.05f,      82.0166f,       4.7479f},
-        {6,     0,      2,      "Isle of Quel'Danas",   0,      70,     0,      530,    12806.5f,       -6911.11f,      41.1156f,       2.22935f},
-        {6,     1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
- 
-        {7,     0,      2,      "Azuremyst Isle",       0,      0,      2,      530,    -4192.62f,      -12576.7f,      36.7598f,       1.62813f},
-        {7,     0,      2,      "Teldrassil",   0,      0,      2,      1,      9889.03f,       915.869f,       1307.43f,       1.9336f},
-        {7,     0,      2,      "Durotar",      0,      0,      1,      1,      228.978f,       -4741.87f,      10.1027f,       0.416883f},
-        {7,     0,      2,      "Mulgore",      0,      0,      1,      1,      -2473.87f,      -501.225f,      -9.42465f,      0.6525f},
-        {7,     0,      2,      "Bloodmyst Isle",       0,      15,     2,      530,    -2095.7f,       -11841.1f,      51.1557f,       6.19288f},
-        {7,     0,      2,      "Darkshore",    0,      10,     2,      1,      6463.25f,       683.986f,       8.92792f,       4.33534f},
-        {7,     0,      2,      "The Barrens",  0,      10,     1,      1,      -575.772f,      -2652.45f,      95.6384f,       0.006469f},
-        {7,     0,      2,      "Stonetalon Mountains", 0,      15,     0,      1,      1574.89f,       1031.57f,       137.442f,       3.8013f},
-        {7,     0,      2,      "Ashenvale Forest",     0,      18,     0,      1,      1919.77f,       -2169.68f,      94.6729f,       6.14177f},
-        {7,     0,      2,      "Thousand Needles",     0,      25,     1,      1,      -5375.53f,      -2509.2f,       -40.432f,       2.41885f},
-        {7,     0,      2,      "Desolace",     0,      30,     0,      1,      -656.056f,      1510.12f,       88.3746f,       3.29553f},
-        {7,     0,      2,      "Dustwallow Marsh",     0,      35,     0,      1,      -3350.12f,      -3064.85f,      33.0364f,       5.12666f},
-        {7,     0,      2,      "Feralas",      0,      40,     0,      1,      -4808.31f,      1040.51f,       103.769f,       2.90655f},
-        {7,     0,      2,      "Tanaris Desert",       0,      40,     0,      1,      -6940.91f,      -3725.7f,       48.9381f,       3.11174f},
-        {7,     0,      2,      "Azshara",      0,      45,     0,      1,      3117.12f,       -4387.97f,      91.9059f,       5.49897f},
-        {7,     0,      2,      "Felwood",      0,      48,     0,      1,      3898.8f,        -1283.33f,      220.519f,       6.24307f},
-        {7,     0,      2,      "Un'Goro Crater",       0,      48,     0,      1,      -6291.55f,      -1158.62f,      -258.138f,      0.457099f},
-        {7,     0,      2,      "Silithus",     0,      55,     0,      1,      -6815.25f,      730.015f,       40.9483f,       2.39066f},
-        {7,     0,      2,      "Winterspring", 0,      55,     0,      1,      6658.57f,       -4553.48f,      718.019f,       5.18088f},
-        {7,     1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
- 
-        {8,     0,      2,      "Hellfire Peninsula",   0,      58,     0,      530,    -207.335f,      2035.92f,       96.464f,        1.59676f},
-        {8,     0,      2,      "Zangarmarsh",  0,      60,     0,      530,    -220.297f,      5378.58f,       23.3223f,       1.61718f},
-        {8,     0,      2,      "Terokkar Forest",      0,      62,     0,      530,    -2266.23f,      4244.73f,       1.47728f,       3.68426f},
-        {8,     0,      2,      "Nagrand",      0,      64,     0,      530,    -1610.85f,      7733.62f,       -17.2773f,      1.33522f},
-        {8,     0,      2,      "Blade's Edge Mountains",       0,      65,     0,      530,    2029.75f,       6232.07f,       133.495f,       1.30395f},
-        {8,     0,      2,      "Netherstorm",  0,      67,     0,      530,    3271.2f,        3811.61f,       143.153f,       3.44101f},
-        {8,     0,      2,      "Shadowmoon Valley",    0,      67,     0,      530,    -3681.01f,      2350.76f,       76.587f,        4.25995f},
-        {8,     1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
- 
-        {9,     0,      2,      "Borean Tundra",        0,      68,     0,      571,    2954.24f,       5379.13f,       60.4538f,       2.55544f},
-        {9,     0,      2,      "Howling Fjord",        0,      68,     0,      571,    682.848f,       -3978.3f,       230.161f,       1.54207f},
-        {9,     0,      2,      "Dragonblight", 0,      71,     0,      571,    2678.17f,       891.826f,       4.37494f,       0.101121f},
-        {9,     0,      2,      "Grizzly Hills",        0,      73,     0,      571,    4017.35f,       -3403.85f,      290.0f, 5.35431f},
-        {9,     0,      2,      "Zul'Drak",     0,      74,     0,      571,    5560.23f,       -3211.66f,      371.709f,       5.55055f},
-        {9,     0,      2,      "Sholazar Basin",       0,      76,     0,      571,    5614.67f,       5818.86f,       -69.722f,       3.60807f},
-        {9,     0,      2,      "Crystalsong Forest",   0,      77,     0,      571,    5411.17f,       -966.37f,       167.082f,       1.57167f},
-        {9,     0,      2,      "Storm Peaks",  0,      77,     0,      571,    6120.46f,       -1013.89f,      408.39f,        5.12322f},
-        {9,     0,      2,      "Icecrown",     0,      77,     0,      571,    8323.28f,       2763.5f,        655.093f,       2.87223f},
-        {9,     0,      2,      "Wintergrasp",  0,      77,     0,      571,    4522.23f,       2828.01f,       389.975f,       0.215009f},
-        {9,     1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
- 
-//        {10,    7100,      2,      "Reset Talents",     0,      0,      0,      0,    0,     0,     0,     0},
-//      {10,    1,      7,      "Retour..",       0,      0,      0,      0,      0,      0,      0,      0},
-};
- 
-// TextIDs from npc_text
-enum eEnums
-{
-        TEXT_MAIN_H             =       300000,                 //Horde main menu text
-        TEXT_MAIN_A             =       300001,                 //Alliance main menu text
-        TEXT_DUNGEON            =       300002,                 //Dungeon teleport menu texts
-        TEXT_RAID               =       300003,                 //Raid teleport menu text
-        TEXT_AREA               =       300004,                 //Area teleport location menu texts
-       
-        TELEPORT_COUNT  =       sizeof TeLe/sizeof(*TeLe),
-};
- 
-#define ARE_YOU_SURE    "Etes vous sur de vouloir aller à "
-#define ERROR_COMBAT    "|cffff0000Impossible en combat|r"
- 
-bool Custom_FactCheck (uint32 Fact, unsigned char Key)
-{
-        bool Show = false;
-        switch (TeLe[Key].faction)
-        {
-        case 0:
-                Show = true;
-                break;
-        case 1:
-                if (Fact == HORDE)
-                        Show = true;
-                break;
-        case 2:
-                if (Fact == ALLIANCE)
-                        Show = true;
-                break;
-        }
-        return (Show);
-}
- 
-uint32 Custom_GetText (unsigned int menu, Player* pPlayer)
-{
-        uint32 TEXT = TEXT_AREA;
-        switch (menu)
-        {
-        case 0:
-                switch (pPlayer->GetTeam())
-                {
-                case ALLIANCE:
-                        TEXT = TEXT_MAIN_A;
-                        break;
-                case HORDE:
-                        TEXT = TEXT_MAIN_H;
-                        break;
-                }
-        case 1:
-        case 2:
-        case 3:
-                TEXT = TEXT_DUNGEON;
-                break;
-        case 4:
-                TEXT = TEXT_RAID;
-                break;
-        }
-        return (TEXT);
-}
- 
-void Custom_GetMenu (Player* pPlayer, Creature* pCreature, uint32 Key)
-{
-        bool ENDMENU = false;
-        for(uint32 i = 0; i < TELEPORT_COUNT; i++)
-        {
-                if (ENDMENU && TeLe[i].menu_id != Key)
-                        break;
-                if (TeLe[i].menu_id == Key && pPlayer->getLevel() >= TeLe[i].level && Custom_FactCheck(pPlayer->GetTeam(), i))
-                {
-                        if (TeLe[i].next_menu_id != 0)
-                                pPlayer->ADD_GOSSIP_ITEM_EXTENDED(TeLe[i].icon, TeLe[i].name, GOSSIP_SENDER_MAIN, i, "", TeLe[i].cost, false);
-                        else
-                                pPlayer->ADD_GOSSIP_ITEM_EXTENDED(TeLe[i].icon, TeLe[i].name, GOSSIP_SENDER_MAIN, i, ARE_YOU_SURE+TeLe[i].name, TeLe[i].cost, false);
-                        ENDMENU = true;
-                }
-        }
-        pPlayer->PlayerTalkClass->SendGossipMenu(Custom_GetText(Key, pPlayer), pCreature->GetGUID());
-}
- 
-class TeLe_gossip_codebox : public CreatureScript
-{
-        public:
-        TeLe_gossip_codebox()
-        : CreatureScript("TeLe_gossip_codebox")
-        {
-        }
- 
-        bool OnGossipHello(Player* pPlayer, Creature* pCreature)
-        {
-                Custom_GetMenu(pPlayer, pCreature, 1);
-                return true;  
-        }
- 
-        bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-        {
-                pPlayer->PlayerTalkClass->ClearMenus(); // clear the menu
 
-				pPlayer->ModifyMoney(-1 * TeLe[uiAction].cost); // take cash
-                uint32 Key = TeLe[uiAction].next_menu_id;
-                if (Key == 0) // if no next_menu_id, then teleport to coords
+class npc_teleport : public CreatureScript
+{
+    public:
+        npc_teleport() : CreatureScript("npc_teleport") { }
+
+                bool OnGossipHello(Player *player, Creature *_creature)
                 {
-                        if (!pPlayer->IsInCombat())
+                        if (player->IsInCombat())
                         {
-                                pPlayer->CLOSE_GOSSIP_MENU();
-                                pPlayer->TeleportTo(TeLe[uiAction].map, TeLe[uiAction].x, TeLe[uiAction].y, TeLe[uiAction].z, TeLe[uiAction].o);
-                                return true;
+                                player->CLOSE_GOSSIP_MENU();
+                                _creature->MonsterWhisper("Combat!", player->GetGUID());
+                        return true;
                         }
-                        pPlayer->GetSession()->SendAreaTriggerMessage(ERROR_COMBAT);
-                        Key = TeLe[uiAction].menu_id;
+                else
+                        {
+                                player->ADD_GOSSIP_ITEM( 0, "Wrath of the Lich King"         , GOSSIP_SENDER_MAIN, 1);
+                                player->ADD_GOSSIP_ITEM( 0, "Cataclysm"                      , GOSSIP_SENDER_MAIN, 2);
+                        }
+
+                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());         
+                return true;
                 }
 
-                Custom_GetMenu(pPlayer, pCreature, Key);
-                return true;
+                bool OnGossipSelect(Player *player, Creature *_creature, uint32 sender, uint32 uiAction)
+                {
+                    if (player->IsInCombat())
+                    {
+                                player->CLOSE_GOSSIP_MENU();
+                                _creature->MonsterWhisper("Combat !", player->GetGUID());
+                                return true;
+                   }
+                    if (sender == GOSSIP_SENDER_MAIN)
+                    {
+                         player->PlayerTalkClass->ClearMenus();
+                      switch(uiAction)
+                         {
+                         case 1: //Wrath of the Lich King
+                                player->ADD_GOSSIP_ITEM( 2, "Cities"                         , GOSSIP_SENDER_MAIN, 10);
+                                player->ADD_GOSSIP_ITEM( 2, "Dungeons"                       , GOSSIP_SENDER_MAIN, 11);
+                                player->ADD_GOSSIP_ITEM( 2, "Raids"                          , GOSSIP_SENDER_MAIN, 13);
+                                player->ADD_GOSSIP_ITEM( 2, "Arenas"                         , GOSSIP_SENDER_MAIN, 14);
+                                player->ADD_GOSSIP_ITEM( 2, "OutdoorPvP"                     , GOSSIP_SENDER_MAIN, 15);
+                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                 , GOSSIP_SENDER_MAIN, 3);
+
+                                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                break;
+
+                                        case 10: //Cities
+                                                player->ADD_GOSSIP_ITEM( 0, "Stormwind"                         , GOSSIP_SENDER_MAIN, 100);
+                                                player->ADD_GOSSIP_ITEM( 0, "Ironforge"                         , GOSSIP_SENDER_MAIN, 101);
+                                                player->ADD_GOSSIP_ITEM( 0, "Darnassus"                         , GOSSIP_SENDER_MAIN, 102);
+                                                player->ADD_GOSSIP_ITEM( 0, "Exodar"                            , GOSSIP_SENDER_MAIN, 103);
+                                                player->ADD_GOSSIP_ITEM( 0, "Orgrimmar"                         , GOSSIP_SENDER_MAIN, 104);
+                                                player->ADD_GOSSIP_ITEM( 0, "Thunderbluff"                      , GOSSIP_SENDER_MAIN, 105);
+                                                player->ADD_GOSSIP_ITEM( 0, "Undercity"                         , GOSSIP_SENDER_MAIN, 106);
+                                                player->ADD_GOSSIP_ITEM( 0, "Silvermoon City"                   , GOSSIP_SENDER_MAIN, 107);
+                                                player->ADD_GOSSIP_ITEM( 0, "Shattrath City"                    , GOSSIP_SENDER_MAIN, 108);
+                                                player->ADD_GOSSIP_ITEM( 0, "Dalaran"                           , GOSSIP_SENDER_MAIN, 109);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Wrath of the Lich King]"      , GOSSIP_SENDER_MAIN, 1);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                    , GOSSIP_SENDER_MAIN, 3);
+
+                                                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                        break;
+
+                                        case 11: //Dungeons I
+                                                player->ADD_GOSSIP_ITEM( 0, "Azjol-Nerub: Ahn'kahet: The Old Kingdom"        , GOSSIP_SENDER_MAIN, 110);
+                                                player->ADD_GOSSIP_ITEM( 0, "Azjol-Nerub: Azjol-Nerub"                       , GOSSIP_SENDER_MAIN, 111);
+                                                player->ADD_GOSSIP_ITEM( 0, "Caverns of Time: The Culling of Stratholme"     , GOSSIP_SENDER_MAIN, 112);
+                                                player->ADD_GOSSIP_ITEM( 0, "Crusaders' Coliseum: Trial of the Champion"     , GOSSIP_SENDER_MAIN, 113);
+                                                player->ADD_GOSSIP_ITEM( 0, "Drak'Tharon Keep"                                 , GOSSIP_SENDER_MAIN, 114);
+                                                player->ADD_GOSSIP_ITEM( 0, "Gundrak"                                          , GOSSIP_SENDER_MAIN, 115);
+                                                player->ADD_GOSSIP_ITEM( 0, "Icecrown Citadel: Halls of Reflection"          , GOSSIP_SENDER_MAIN, 116);
+                                                player->ADD_GOSSIP_ITEM( 0, "Icecrown Citadel: Pit of Saron"                   , GOSSIP_SENDER_MAIN, 117);
+                                                player->ADD_GOSSIP_ITEM( 4, "[Page II] ->"                                            , GOSSIP_SENDER_MAIN, 12);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Wrath of the Lich King]"               , GOSSIP_SENDER_MAIN, 1);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                                    , GOSSIP_SENDER_MAIN, 3);
+
+                                                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                        break;
+
+                                        case 12: //Dungeons II
+                                                player->ADD_GOSSIP_ITEM( 0, "Icecrown Citadel: The Forge of Souls"          , GOSSIP_SENDER_MAIN, 120);
+                                                player->ADD_GOSSIP_ITEM( 0, "The Nexus: The Nexus"                            , GOSSIP_SENDER_MAIN, 121);
+                                                player->ADD_GOSSIP_ITEM( 0, "The Nexus: The Oculus"                          , GOSSIP_SENDER_MAIN, 122);
+                                                player->ADD_GOSSIP_ITEM( 0, "The Violet Hold"                               , GOSSIP_SENDER_MAIN, 123);
+                                                player->ADD_GOSSIP_ITEM( 0, "Ulduar: Halls of Lightning"                      , GOSSIP_SENDER_MAIN, 124);
+                                                player->ADD_GOSSIP_ITEM( 0, "Ulduar: Halls of Stone"                          , GOSSIP_SENDER_MAIN, 125);
+                                                player->ADD_GOSSIP_ITEM( 0, "Utgarde Keep: Utgarde Keep"                      , GOSSIP_SENDER_MAIN, 126);
+                                                player->ADD_GOSSIP_ITEM( 0, "Utgarde Keep: Utgarde Pinnacle"                  , GOSSIP_SENDER_MAIN, 127);
+                                        player->ADD_GOSSIP_ITEM( 4, "<- [Page I]"                                     , GOSSIP_SENDER_MAIN, 11);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Wrath of the Lich King]"             , GOSSIP_SENDER_MAIN, 1);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                                  , GOSSIP_SENDER_MAIN, 3);
+
+                                                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                        break;
+
+                                         case 13: //Raids
+                                                player->ADD_GOSSIP_ITEM( 0, "Crusaders' Coliseum: Trial of the Crusader"       , GOSSIP_SENDER_MAIN, 130);
+                                                player->ADD_GOSSIP_ITEM( 0, "Icecrown Citadel"                                    , GOSSIP_SENDER_MAIN, 131);
+                                                player->ADD_GOSSIP_ITEM( 0, "Naxxramas"                                          , GOSSIP_SENDER_MAIN, 132);
+                                                player->ADD_GOSSIP_ITEM( 0, "Onyxia's Lair"                                      , GOSSIP_SENDER_MAIN, 133);
+                                                player->ADD_GOSSIP_ITEM( 0, "The Nexus: The Eye of Eternity"                   , GOSSIP_SENDER_MAIN, 134);
+                                                player->ADD_GOSSIP_ITEM( 0, "The Obsidian Sanctum"                                , GOSSIP_SENDER_MAIN, 135);
+                                                player->ADD_GOSSIP_ITEM( 0, "Ulduar"                                              , GOSSIP_SENDER_MAIN, 136);
+                                                player->ADD_GOSSIP_ITEM( 0, "Vault of Archavon"                                   , GOSSIP_SENDER_MAIN, 137);
+                                        player->ADD_GOSSIP_ITEM( 0, "The Ruby Sanctum"                                    , GOSSIP_SENDER_MAIN, 138);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Wrath of the Lich King]"                 , GOSSIP_SENDER_MAIN, 1);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                                      , GOSSIP_SENDER_MAIN, 3);
+
+                                                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                        break;
+
+                                        case 14: //Arenas
+                                                player->ADD_GOSSIP_ITEM( 0, "Gurubashi Arena"                   , GOSSIP_SENDER_MAIN, 140);
+                                                player->ADD_GOSSIP_ITEM( 0, "Dire Maul Arena"                   , GOSSIP_SENDER_MAIN, 141);
+                                                player->ADD_GOSSIP_ITEM( 0, "Circle of Blood Arena"             , GOSSIP_SENDER_MAIN, 142);
+                                                player->ADD_GOSSIP_ITEM( 0, "Nagrand Arena"                     , GOSSIP_SENDER_MAIN, 143);
+                                                player->ADD_GOSSIP_ITEM( 0, "Zul'Drak Arena"                    , GOSSIP_SENDER_MAIN, 144);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Wrath of the Lich King]"      , GOSSIP_SENDER_MAIN, 1);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                    , GOSSIP_SENDER_MAIN, 3);
+
+                                                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                        break;
+
+                                         case 15: //OutdoorPvP
+                                                player->ADD_GOSSIP_ITEM( 0, "Wintergrasp"                               , GOSSIP_SENDER_MAIN, 150);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Wrath of the Lich King]"       , GOSSIP_SENDER_MAIN, 1);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                            , GOSSIP_SENDER_MAIN, 3);
+
+                                                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                        break;
+
+                         case 2: //Cataclysm
+                                player->ADD_GOSSIP_ITEM( 2, "Cities"                         , GOSSIP_SENDER_MAIN, 20);
+                                player->ADD_GOSSIP_ITEM( 2, "Dungeons"                       , GOSSIP_SENDER_MAIN, 21);
+                                player->ADD_GOSSIP_ITEM( 2, "Raids"                          , GOSSIP_SENDER_MAIN, 22);
+                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                 , GOSSIP_SENDER_MAIN, 3);
+
+                               player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                break;
+
+                                        case 20: //Cities
+                                                player->ADD_GOSSIP_ITEM( 0, "Kezan"                             , GOSSIP_SENDER_MAIN, 200);
+                                                player->ADD_GOSSIP_ITEM( 0, "Gilneas City"                      , GOSSIP_SENDER_MAIN, 201);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Cataclysm]"                    , GOSSIP_SENDER_MAIN, 2);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                    , GOSSIP_SENDER_MAIN, 3);
+
+                                                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                        break;
+
+                                        case 21: //Dungeons
+                                                player->ADD_GOSSIP_ITEM( 0, "Abyssal Maw: Throne of the Tides"                  , GOSSIP_SENDER_MAIN, 210);
+                                                player->ADD_GOSSIP_ITEM( 0, "Blackrock Caverns"                                 , GOSSIP_SENDER_MAIN, 211);
+                                                player->ADD_GOSSIP_ITEM( 0, "Firelands"                                         , GOSSIP_SENDER_MAIN, 212);
+                                                player->ADD_GOSSIP_ITEM( 0, "Grim Batol"                                        , GOSSIP_SENDER_MAIN, 213);
+                                                player->ADD_GOSSIP_ITEM( 0, "Halls of Origination"                              , GOSSIP_SENDER_MAIN, 214);
+                                                player->ADD_GOSSIP_ITEM( 0, "Lost City of the Tol'vir"                          , GOSSIP_SENDER_MAIN, 215);
+                                                player->ADD_GOSSIP_ITEM( 0, "The Stonecore"                                     , GOSSIP_SENDER_MAIN, 216);
+                                                player->ADD_GOSSIP_ITEM( 0, "The Vortex Pinnacle"                               , GOSSIP_SENDER_MAIN, 217);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Cataclysm]"                                    , GOSSIP_SENDER_MAIN, 2);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                                    , GOSSIP_SENDER_MAIN, 3);
+
+                                                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                        break;
+
+                                         case 22: //Raids
+                                                player->ADD_GOSSIP_ITEM( 0, "Baradin Hold"                                        , GOSSIP_SENDER_MAIN, 220);
+                                                player->ADD_GOSSIP_ITEM( 0, "Blackwing Descent"                           , GOSSIP_SENDER_MAIN, 221);
+                                                player->ADD_GOSSIP_ITEM( 0, "The Bastion of Twilight"                     , GOSSIP_SENDER_MAIN, 222);
+                                                player->ADD_GOSSIP_ITEM( 0, "Throne of the Four Winds"                    , GOSSIP_SENDER_MAIN, 223);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Cataclysm]"                              , GOSSIP_SENDER_MAIN, 2);
+                                                player->ADD_GOSSIP_ITEM( 7, "<- [Main Menu]"                              , GOSSIP_SENDER_MAIN, 3);
+
+                                                player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                        break;
 
 
-        }
+                         case 3: //<- [Main Menu]
+                                player->ADD_GOSSIP_ITEM( 0, "Wrath of the Lich King"        , GOSSIP_SENDER_MAIN, 1);
+                                player->ADD_GOSSIP_ITEM( 0, "Cataclysm"                      , GOSSIP_SENDER_MAIN, 2);
+
+                               player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _creature->GetGUID());
+                                break;
+
+                         /********** Wrath of the Lich King - Cities **********/
+
+                         case 100: //Stormwind
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(0, -8831.029297, 623.342407, 94.074432, 3.939123);
+                               break;
+                         case 101: //Ironforge
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(0, -4918.879883f, -940.406006f, 501.563995f, 5.423470f);
+                               break;
+                         case 102: //Darnassus
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(1, 9949.559570f, 2284.209961f, 1341.394165f, 1.525185f);
+                               break;
+                         case 103: //Exodar
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(530, -3965.699951f, -11653.599609f, -138.843994f, 6.192861f);
+                               break;
+                         case 104: //Orgrimmar
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(1, 1566.470459, -4398.960449, 16.259722, 0.548813);
+                               break;
+                         case 105: //Thunder Bluff
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(1, -1277.369995f, 124.804001f, 131.287003f, 5.222740f);
+                               break;
+                         case 106: //Undercity
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(0, 1584.069946f, 241.987000f, -52.153400f, 0.049647f);
+                               break;
+                         case 107: //Silvermoon City
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(530, 9487.690430f, -7279.200195f, 14.286600f, 6.164780f);
+                               break;
+                         case 108: //Shattrath City
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(530, -1838.160034f, 5301.790039f, -12.428000f, 5.951700f);
+                               break;
+                         case 109: //Dalaran
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 5804.149902f, 624.770996f, 647.767029f, 1.640000f);
+                               break;
+
+                         /********** Wrath of the Lich King - Dungeons I **********/
+                        
+                         case 110: //Azjol-Nerub: Ahn'kahet: The Old Kingdom 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 3650.226562f, 2053.362305f, 1.787416f, 4.287086f);
+                               break;
+                         case 111: //Azjol-Nerub: Azjol-Nerub
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 3707.860107f, 2150.229980f, 36.757530f, 2.629380f);
+                               break;
+                         case 112: //Caverns of Time: The Culling of Stratholme
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(1, -8748.678711f, -4439.887207f, -199.603653f, 4.215156f);
+                               break;
+                         case 113: //Crusaders' Coliseum: Trial of the Champion
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 8516.581055f, 715.013245f, 558.247742f, 1.402019f);
+                               break;
+                         case 114: //Drak'Tharon Keep 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 4497.230957f, -2043.756714f, 160.823090f, 6.212611f);
+                               break;
+                         case 115: //Gundrak 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 6720.729492f, -4632.532715f, 450.067780f, 3.860390f);
+                               break;
+                         case 116: //Icecrown Citadel: Halls of Reflection
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 5820.330566f, 2085.426758f, 636.065022f, 3.45f);
+                               break;
+                         case 117: //Icecrown Citadel: Pit of Saron
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 5820.330566f, 2085.426758f, 636.065022f, 3.45f);
+                               break;
+
+                         /********** Wrath of the Lich King - Dungeons II **********/
+
+                         case 120: //Icecrown Citadel: The Forge of Souls
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 5820.330566f, 2085.426758f, 636.065022f, 3.45f);
+                               break;
+                         case 121: //The Nexus: The Nexus 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 3881.024902f, 6984.152832f, 73.761024f, 0.012697f);
+                               break;
+                         case 122: //The Nexus: The Oculus
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 3881.296631f, 6984.644531f, 106.320549f, 3.167648f);
+                               break;
+                         case 123: //The Violet Hold
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 5696.196777f, 508.277527f, 653.127502f, 4.022903f);
+                               break;
+                         case 124: //Ulduar: Halls of Lightning
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 9122.863281f, -1328.542847f, 1060.774658f, 5.482558f);
+                               break;
+                         case 125: //Ulduar: Halls of Stone 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 8924.228516f, -1018.985535f, 1039.651245f, 1.616828f);
+                               break;
+                         case 126: //Utgarde Keep: Utgarde Keep 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 8924.228516f, -1018.985535f, 1039.651245f, 1.616828f);
+                               break;
+                         case 127: //Utgarde Keep: Utgarde Pinnacle 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 1256.970337f, -4854.426758f, 215.561264f, 3.395841f);
+                               break;
+
+                         /********** Wrath of the Lich King - Raids **********/
+
+                         case 130: //Crusaders' Coliseum: Trial of the Crusader
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 8515.061523f, 682.271545f, 558.247864f, 1.640000f);
+                               break;
+                         case 131: //Icecrown Citadel
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 5820.330566f, 2085.426758f, 636.065022f, 3.45f);
+                               break;
+                         case 132: //Naxxramas
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 3670.364014f, -1279.799194f, 243.533768f, 1.540000f);
+                               break;
+                         case 133: //Onyxia's Lair 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(1, -4681.220215f, -3709.275146f, 46.718338f, 3.510000f);
+                               break;
+                         case 134: //The Nexus: The Eye of Eternity
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 3918.719971f, 7015.359863f, 161.330002f, 0.530000f);
+                               break;
+                         case 135: //The Obsidian Sanctum 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 3452.629883f, 269.256989f, -113.580002f, 0.120000f);
+                               break;
+                         case 136: //Ulduar 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 9327.326172f, -1117.689819f, 1245.146606f, 0.080000f);
+                               break;
+                         case 137: //Vault of Archavon 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 5475.004883f, 2840.206543f, 418.675812f, 6.240000f);
+                               break;
+                         case 138: //The Ruby Sanctum 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 3599.487793f, 198.751205f, -113.832062f, 5.338952f);
+                               break;
+
+                         /********** Wrath of the Lich King - Arenas **********/
+
+                         case 140: //Gurubashi Arena 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(0, -13309.700195f, 78.886703f, 22.289927f, 0.940000f);
+                               break;
+                         case 141: //Dire Maul Arena 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(1, -3717.760010f, 1124.719971f, 132.315994f, 4.340000f);
+                               break;
+                         case 142: //Circle of Blood Arena 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(530, 2837.373535f, 5930.557129f, 11.215009f, 5.700000f);
+                               break;
+                         case 143: //Nagrand Arena 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(530, -1998.135498f, 6579.937988f, 11.166474f, 2.360000f);
+                               break;
+                         case 144: //Zul'Drak Arena 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 5767.081055f, -2998.182617f, 272.817322f, 3.875237f);
+                               break;
+
+                         /********** Wrath of the Lich King - Outdoor PvP **********/
+
+                         case 150: //Wintergrasp 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(571, 4561.580078f, 2835.330078f, 389.790009f, 0.340000f);
+                               break;
+
+                         /********** Cataclysm - Cities **********/
+
+                         case 200: //Kezan
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(648, -8266.549805f, 1497.969971f, 43.061401f, 4.676780f);
+                               break;
+                         case 201: //Gilneas City 
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(0, -1747.245117f, 1371.754517f, 20.2067633f, 0.651257f);
+                               break;
+
+                         /********** Cataclysm - Dungeons **********/
+
+                         case 210: //Abyssal Maw: Throne of the Tides
+                                player->CLOSE_GOSSIP_MENU();
+                               break;
+                         case 211: //Blackrock Caverns
+                                player->CLOSE_GOSSIP_MENU();
+                               break;
+                         case 212: //Firelands
+                                player->CLOSE_GOSSIP_MENU();
+                               break;
+                         case 213: //Grim Batol
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(0, -4068.742432f, -3453.749756f, 279.000641f, 0.342511f);
+                               break;
+                         case 214: //Halls of Origination
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(1, -10205.358398f, -1838.916748f, 20.128099f, 3.202806f);
+                               break;
+                         case 215: //Lost City of the Tol'vir
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(1, -10662.812500f, -1302.016236f, 15.354200f, 3.400734f);
+                               break;
+                         case 216: //The Stonecore
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(646, 1021.212585f, 649.178284f, 156.672363f, 4.961962f);
+                               break;
+                         case 217: //The Vortex Pinnacle
+                                player->CLOSE_GOSSIP_MENU();
+                               break;
+
+                         /********** Cataclysm - Raids **********/
+
+                         case 220: //Baradin Hold
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(732, -1259.285767f, 1049.690186f, 106.995003f, 3.102642f);
+                               break;
+                         case 221: //Blackwing Descent
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(0, -7536.93359f, -1203.900635f, 477.725647f, 1.859162f);
+                               break;
+                         case 222: //The Bastion of Twilight
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(0,-4891, -4235, 829, 2);
+                               break;
+                         case 223: //Throne of the Four Winds
+                                player->CLOSE_GOSSIP_MENU();
+                                player->TeleportTo(1, -11354.738281f, 57.456497f, 723.884705f, 1.982325f);
+                               break;
+
+                         default:
+                                 break;
+                         }
+                  }
+                  return true;
+          }
 };
- 
-void AddSC_TeLe_gossip_codebox()
+
+void AddSC_npc_teleport()
 {
-    new TeLe_gossip_codebox();
+    new npc_teleport();
 }
