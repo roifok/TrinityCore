@@ -1452,11 +1452,11 @@ class spell_druid_rejuvenation : public SpellScriptLoader
                 {
                     PreventDefaultAction();
                     // Gift of the Earthmother
-                    if (AuraEffect const* empoweredRenewAurEff = caster->GetDummyAuraEffect(SPELLFAMILY_DRUID, SPELL_DRUID_GIFT_OF_THE_EARTHMOTHER_TALENT, EFFECT_0))
+                    if (AuraEffect const* RejuvenationAurEff = caster->GetDummyAuraEffect(SPELLFAMILY_DRUID, SPELL_DRUID_GIFT_OF_THE_EARTHMOTHER_TALENT, EFFECT_0))
                     {
                         uint32 heal = caster->SpellHealingBonusDone(GetTarget(), GetSpellInfo(), aurEff->GetAmount(), DOT);
                         heal = GetTarget()->SpellHealingBonusTaken(caster, GetSpellInfo(), heal, DOT);
-                        int32 basepoints0 = CalculatePct(int32(heal) * aurEff->GetTotalTicks(), empoweredRenewAurEff->GetAmount());
+                        int32 basepoints0 = CalculatePct(int32(heal) * aurEff->GetTotalTicks(), RejuvenationAurEff->GetAmount());
                         caster->CastCustomSpell(GetTarget(), SPELL_DRUID_INSTANT_REJUVENATION, &basepoints0, NULL, NULL, true, NULL, aurEff);
                     }
                 }

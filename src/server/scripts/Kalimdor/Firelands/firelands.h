@@ -10,11 +10,14 @@ enum Datas
 {
     DATA_BETHILAC               = 1,
     DATA_LORD_RYOLITH           = 2,
-    DATA_ALYSRAZAR              = 3,
+    DATA_ALYSRAZOR              = 3,
     DATA_SHANNOX                = 4,
     DATA_BALOROC                = 5,
     DATA_MAJORDOMUS_STANGEHELM  = 6,
     DATA_RAGNAROS               = 7,
+	DATA_BALEROC                = 8,
+    // Adds
+    DATA_Crystal_Shard          = 9,
 };
  
 enum GameObjectIds
@@ -48,6 +51,9 @@ enum CreatureIds
     NPC_HARBINGER_OF_FLAME          = 53793,
     NPC_MOLTEN_EGG_TRASH            = 53914,	
     NPC_SMOULDERING_HATCHLING       = 53794,
+	// Baleroc
+    BOSS_BALEROC                    = 53494,
+    NPC_Crystal_Shard               = 53495,
 };
  
 class DelayedAttackStartEvent : public BasicEvent
@@ -65,7 +71,6 @@ class DelayedAttackStartEvent : public BasicEvent
         Creature* _owner;
 };
  
-/*
 template<class AI>
 CreatureAI* GetFirelandsAI(Creature* creature)
 {
@@ -75,6 +80,5 @@ CreatureAI* GetFirelandsAI(Creature* creature)
                 return new AI(creature);
     return NULL;
 }
-*/
  
 #endif // FIRELANDS_H_

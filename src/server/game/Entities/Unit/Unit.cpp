@@ -601,16 +601,13 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     if (IsAIEnabled)
         GetAI()->DamageDealt(victim, damage, damagetype);
 
-<<<<<<< HEAD
     if (damagetype == DIRECT_DAMAGE || damagetype == SPELL_DIRECT_DAMAGE)
     {
         m_damage_done[0] += damage;
         victim->m_damage_taken[0] += damage;
      }
-=======
     // Hook for OnDamage Event
     sScriptMgr->OnDamage(this, victim, damage);
->>>>>>> trinitycore/4.3.4
 
     if (victim->GetTypeId() == TYPEID_PLAYER && this != victim)
     {

@@ -63,6 +63,9 @@ enum HunterSpells
     SPELL_HUNTER_PET_AURA_FRENZY_TRIGGER            = 20784,
     SPELL_HUNTER_KILL_COMMAND                       = 34026,
     SPELL_HUNTER_KILL_COMMAND_TRIGGER               = 83381,
+    SPELL_HUNTER_INSTANT_SERPENT_STING              = 83077,
+    SPELL_HUNTER_IMPROVED_SERPENT_STING_R1          = 19464,
+    SPELL_HUNTER_IMPROVED_SERPENT_STING_R2          = 82834,
     
 };
 
@@ -280,27 +283,37 @@ class spell_hun_improved_serpent_sting : public SpellScriptLoader
         {
             PrepareAuraScript(spell_hun_improved_serpent_sting_AuraScript);
 
-            void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellMod)
+      bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
             {
-                if (!spellMod)
-                {
-                    spellMod = new SpellModifier(GetAura());
-                    spellMod->op = SpellModOp(aurEff->GetMiscValue());
-                    spellMod->type = SPELLMOD_PCT;
-                    spellMod->spellId = GetId();
-                    spellMod->mask = GetSpellInfo()->Effects[aurEff->GetEffIndex()].SpellClassMask;
-                }
+                if (!sSpellMgr->GetSpellInfo(SPELL_HUNTER_IMPROVED_SERPENT_STING_R1)||!sSpellMgr->GetSpellInfo(SPELL_HUNTER_IMPROVED_SERPENT_STING_R2))
+                    return false;
+                return true;
+            }                
 
-                spellMod->value = aurEff->GetAmount();
-            }
+      void OnApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+          {
+            Unit* caster = GetCaster();
+            
+            if (!caster)
+                return;
+            
+        if (Unit* target = GetTarget())
+                {
+                    if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_HUNTER, HUNTER_ICON_ID_IMPROVED_SERPENT_STING, EFFECT_0))
+                    {
+                    int32 basepoints0 = aurEff->GetAmount() * GetAura()->GetEffect(EFFECT_0)->GetTotalTicks() * caster->SpellDamageBonusDone(target, GetSpellInfo(), GetAura()->GetEffect(0)->GetAmount(), DOT) / 100;
+                    caster->CastCustomSpell(target, SPELL_HUNTER_INSTANT_SERPENT_STING, &basepoints0, NULL, NULL, true, NULL, GetAura()->GetEffect(0));
+                    }
+          }
+      }
 
             void Register() OVERRIDE
             {
-                DoEffectCalcSpellMod += AuraEffectCalcSpellModFn(spell_hun_improved_serpent_sting_AuraScript::HandleEffectCalcSpellMod, EFFECT_0, SPELL_AURA_DUMMY);
+                AfterEffectApply += AuraEffectApplyFn(spell_hun_improved_serpent_sting_AuraScript::OnApply, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
             }
         };
 
-        AuraScript* GetAuraScript() const OVERRIDE
+    AuraScript* GetAuraScript() const OVERRIDE
         {
             return new spell_hun_improved_serpent_sting_AuraScript();
         }

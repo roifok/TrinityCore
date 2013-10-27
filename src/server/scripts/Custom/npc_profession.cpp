@@ -82,7 +82,7 @@ class Professions_NPC : public CreatureScript
                         LearnSkillRecipesHelper(pPlayer, SkillInfo->id);
 
                         pPlayer->SetSkill(SkillInfo->id, pPlayer->GetSkillStep(SkillInfo->id), 525, 525);
-                        handler.PSendSysMessage(RBAC_PERM_COMMAND_LEARN_ALL_RECIPES, skill_name);
+                        handler.PSendSysMessage(LANG_COMMAND_LEARN_ALL_RECIPES, skill_name);
                 
                         return true;
                 }
