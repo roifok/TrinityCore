@@ -84,6 +84,7 @@ enum MiscSpells
     SPELL_GEN_REPLENISHMENT                         = 57669
 };
 
+// Body and Soul
 class spell_pri_body_and_soul : public SpellScriptLoader
 {
     public:
@@ -134,6 +135,174 @@ class spell_pri_body_and_soul : public SpellScriptLoader
             return new spell_pri_body_and_soul_AuraScript();
         }
 };
+
+// 81659, 81662 - Evangelism
+class spell_pri_evangelism : public SpellScriptLoader
+{
+    public:
+        spell_pri_evangelism() : SpellScriptLoader("spell_pri_evangelism") { }
+
+        class spell_pri_evangelism_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_pri_evangelism_AuraScript);
+
+            bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
+            {
+                if (!sSpellMgr->GetSpellInfo(81659) ||
+                    !sSpellMgr->GetSpellInfo(81662))
+                    return false;
+                return true;
+            }
+
+			void HandleEffectStackProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+            {
+                PreventDefaultAction();
+                // Proc with Smite or Holy Fire
+                if ((eventInfo.GetDamageInfo()->GetSpellInfo()->SpellFamilyFlags[0] & 0x00000080 || eventInfo.GetDamageInfo()->GetSpellInfo()->SpellFamilyFlags[0] & 0x00100000))
+				{	
+					if (GetCaster()->HasAura(81659)) // Evangelism Rank 1
+				    {
+				        GetCaster()->CastSpell(GetCaster(),81660,true);
+						GetCaster()->AddAura(87154, GetCaster());
+				    }
+
+					if (GetCaster()->HasAura(81662)) // Evangelism Rank 2
+					{
+					    GetCaster()->CastSpell(GetCaster(),81661,true);
+						GetCaster()->AddAura(87154, GetCaster());
+					}
+					return;
+                }
+
+                if ((eventInfo.GetDamageInfo()->GetSpellInfo()->SpellFamilyFlags[2] & 0x00000440))
+				{	
+					if (GetCaster()->HasAura(81659))
+				    {
+				        GetCaster()->CastSpell(GetCaster(),87117,true);  // Dark Evangelism Rank 1
+						GetCaster()->AddAura(87154, GetCaster());
+				    }
+
+					if (GetCaster()->HasAura(81662)) 
+					{
+					    GetCaster()->CastSpell(GetCaster(),87118,true); // Dark Evangelism Rank 2
+						GetCaster()->AddAura(87154, GetCaster());
+					}
+					return;
+                }
+            }
+
+            void Register() OVERRIDE
+            {
+                OnEffectProc += AuraEffectProcFn(spell_pri_evangelism_AuraScript::HandleEffectStackProc, EFFECT_0, SPELL_AURA_DUMMY);
+            }
+        };
+
+        AuraScript* GetAuraScript() const OVERRIDE
+        {
+            return new spell_pri_evangelism_AuraScript();
+        }
+};
+
+// 87151 - Archangel
+class spell_pri_archangel : public SpellScriptLoader
+{
+    public:
+        spell_pri_archangel() : SpellScriptLoader("spell_pri_archangel") { }
+
+        class spell_pri_archangel_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_pri_archangel_SpellScript);
+
+			bool Validate(SpellInfo const* /*spellInfo*/) OVERRIDE
+            {
+                if (!sSpellMgr->GetSpellInfo(87151))
+                    return false;
+                return true;
+            }
+
+			void HandleOnCast()
+            {                
+                    // holy
+                    if (Aura* holy = GetCaster()->GetAura(81661))
+                    {
+                        int32 bp = holy->GetStackAmount() * 3;
+                        //Give mana
+                        GetCaster()->CastSpell(GetCaster(),87152,true);
+                        //Cast visual & mod healing
+                        GetCaster()->CastCustomSpell(GetCaster(), 81700, &bp, NULL, NULL, true);
+                        GetCaster()->RemoveAurasDueToSpell(81661);
+                    }
+                    // dark
+                    if (Aura* shadow = GetCaster()->GetAura(87118))
+                    {
+                        int32 bp = shadow->GetStackAmount() * 4;
+                        int32 bp_ = 5;
+                        GetCaster()->CastCustomSpell(GetCaster(), 87152, &bp_, NULL, NULL, true);
+                        GetCaster()->CastCustomSpell(GetCaster(), 87153, &bp, &bp, NULL, true);
+                        GetCaster()->RemoveAurasDueToSpell(87118);
+                    }
+                
+			}
+            void Register() OVERRIDE
+            {
+				OnCast += SpellCastFn(spell_pri_archangel_SpellScript::HandleOnCast);
+            }
+        };
+
+        SpellScript* GetSpellScript() const OVERRIDE
+        {
+            return new spell_pri_archangel_SpellScript();
+        }
+};
+
+// 87099, 87100 - Sin and Punishment
+/*class spell_pri_sin_and_punishment : public SpellScriptLoader
+{
+    public:
+        spell_pri_sin_and_punishment() : SpellScriptLoader("spell_pri_sin_and_punishment") { }
+
+        class spell_pri_sin_and_punishment_AuraScript : public AuraScript
+        {
+            PrepareAuraScript(spell_pri_sin_and_punishment_AuraScript);
+
+
+
+			void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+            {  
+				    //Sin and Punishment rank 1
+				   if (Player* caster = triggeredByAura->GetCaster()->ToPlayer())
+                   {
+                        if (caster->HasSpellCooldown(34433))
+                        {
+                            uint32 seconds = triggeredByAura->GetSpellInfo()->Effects[triggeredByAura->GetEffIndex()].CalcValue();
+                            caster->UpdateSpellCooldown(34433, seconds);
+                            return true;
+                        }
+                    }
+
+                    //Sin and Punishment rank 2
+				    if (Player* caster = triggeredByAura->GetCaster()->ToPlayer())
+                    {
+                        if (caster->HasSpellCooldown(34433))
+                        {
+                            uint32 seconds = triggeredByAura->GetSpellInfo()->Effects[triggeredByAura->GetEffIndex()].CalcValue();
+                            caster->UpdateSpellCooldown(34433, seconds);
+                            return true;
+                        }
+                    }
+				                    
+			}
+            void Register() OVERRIDE
+            {
+				OnEffectProc += AuraEffectProcFn(spell_pri_sin_and_punishment_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+            }
+        };
+
+        AuraScript* GetAuraScript() const OVERRIDE
+        {
+            return new spell_pri_sin_and_punishment_AuraScript();
+        }
+};*/
 
 // 527 - Dispel magic
 class spell_pri_dispel_magic : public SpellScriptLoader
@@ -1238,9 +1407,11 @@ public:
 
 void AddSC_priest_spell_scripts()
 {
+	new spell_pri_archangel();
     new spell_pri_body_and_soul();
     new spell_pri_dispel_magic();
     new spell_pri_divine_aegis();
+	new spell_pri_evangelism();
     new spell_pri_glyph_of_prayer_of_healing();
     new spell_pri_improved_power_word_shield();
     new spell_pri_item_greater_heal_refund();
@@ -1264,4 +1435,5 @@ void AddSC_priest_spell_scripts()
     new spell_pri_chakra_swap_supressor();
     new spell_pri_chakra_serenity_proc();
     new spell_pri_chakra_sanctuary_heal();
+	/*new spell_pri_sin_and_punishment();*/
 }

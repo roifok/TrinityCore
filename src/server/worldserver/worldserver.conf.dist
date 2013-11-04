@@ -30,6 +30,7 @@
 #    LOGGING SYSTEM SETTINGS
 #    CURRENCIES SETTINGS
 #    PACKET SPOOF PROTECTION SETTINGS
+#    MORPH MASTER CONTROL OPTIONS 
 #
 ###################################################################################################
 
@@ -2968,5 +2969,33 @@ PacketSpoof.BanMode = 0
 
 PacketSpoof.BanDuration = 86400
 
+#
+###################################################################################################
+# MORPH MASTER CONTROL OPTIONS 
+#
+#  
+#    Server.Morpher.Enable
+#      Description: Enable/Disable Morph/Scale Npc.
+#      Default:  1 - (Enabled)
+#                0 - (Disabled)
+ 
+Server.Morpher.Enable = 1
+
+##
+#    Permanent.Morph.Menu.Enable
+#      Description: Enable/Disable Morph Menu.
+#      Default:  1 - (Enabled)
+#                0 - (Disabled)
+ 
+Permanent.Morph.Menu.Enable = 1
+
+##
+#
+#    Permanent.Scale.Menu.Enable
+#      Description: Enable/Disable Scale Menu.
+#      Default:  1 - (Enabled)
+#                0 - (Disabled)
+ 
+Permanent.Scale.Menu.Enable = 1 
 #
 ###################################################################################################

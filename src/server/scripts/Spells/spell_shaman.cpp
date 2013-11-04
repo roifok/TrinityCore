@@ -654,6 +654,10 @@ class spell_sha_healing_stream_totem : public SpellScriptLoader
             {
                 int32 damage = GetEffectValue();
                 SpellInfo const* triggeringSpell = GetTriggeringSpell();
+											
+				if (AuraEffect const* aurEff = GetCaster()->GetOwner()->GetAuraEffect(55456, EFFECT_0))
+								GetCaster()->CastSpell(GetCaster(),8185);
+
                 if (Unit* target = GetHitUnit())
                     if (Unit* caster = GetCaster())
                     {
@@ -667,9 +671,6 @@ class spell_sha_healing_stream_totem : public SpellScriptLoader
                                 AddPct(damage, dummy->GetAmount());
                             
 							damage = int32(target->SpellHealingBonusTaken(owner, triggeringSpell, damage, HEAL));
-							
-							if (AuraEffect const* aurEff = owner->GetAuraEffect(55456, EFFECT_0))
-								caster->CastSpell(caster,8185);
 						}
                         caster->CastCustomSpell(target, SPELL_SHAMAN_TOTEM_HEALING_STREAM_HEAL, &damage, 0, 0, true, 0, 0, GetOriginalCaster()->GetGUID());
                     }
@@ -976,7 +977,7 @@ class spell_sha_mana_tide_totem : public SpellScriptLoader
                 ///@TODO: Exclude the "short term" buffs from the stat value
                 if (Unit* caster = GetCaster())
                     if (Unit* owner = caster->GetOwner())
-                        amount = CalculatePct(owner->GetStat(STAT_SPIRIT), aurEff->GetAmount());
+                        amount = CalculatePct(owner->GetStat(STAT_SPIRIT), 2.0f);
             }
 
             void Register() OVERRIDE

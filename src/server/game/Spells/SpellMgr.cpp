@@ -3137,6 +3137,10 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 82661: // Aspect of the Fox
                 spellInfo->Effects[0].ApplyAuraName = SPELL_AURA_PROC_TRIGGER_SPELL;
                 break;
+			case 81261://Solar Beam
+				spellInfo->Effects[0].ApplyAuraName = SPELL_EFFECT_APPLY_AURA;
+				spellInfo->DurationEntry = sSpellDurationStore.LookupEntry(10); //Duration
+				break;
             case 86105:// Jinx
             case 85547:
                 spellInfo->DurationEntry = sSpellDurationStore.LookupEntry(5);
@@ -3209,7 +3213,7 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 53232: // Rapid Killing (Rank 2)
                 // Entries were not updated after spell effect change, we have to do that manually :/
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_CAN_PROC_WITH_TRIGGERED;
-                break;
+                break; 
             case 5308: // Execute
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_CANT_TRIGGER_PROC;
                 break;
@@ -3352,12 +3356,12 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->Effects[EFFECT_1].ApplyAuraName = SPELL_AURA_MOD_INCREASE_ENERGY_PERCENT;
                 break;
             case 30421: // Nether Portal - Perseverence
-                spellInfo->Effects[EFFECT_2].BasePoints += 30000;
+                spellInfo->Effects[EFFECT_2].BasePoints += 30000; 
                 break;
             case 41913: // Parasitic Shadowfiend Passive
                 spellInfo->Effects[EFFECT_0].ApplyAuraName = SPELL_AURA_DUMMY; // proc debuff, and summon infinite fiends
                 break;
-            case 27892: // To Anchor 1
+            case 27892: // To Anchor 1 
             case 27928: // To Anchor 1
             case 27935: // To Anchor 1
             case 27915: // Anchor to Skulls

@@ -5355,6 +5355,14 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     target = this;
                     break;
                 }
+                //Mind Melt
+                case 87160:
+                case 81292:
+                {
+                    if(procSpell->Id != 73510)
+                        return false;
+                    break;
+                }
                 // Shadowfiend Death (Gain mana if pet dies with Glyph of Shadowfiend)
                 case 57989:
                 {
@@ -5708,7 +5716,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
 
                     target = this;
                     break;
-                }
+                }    
                 // Oracle Healing Bonus ("Garments of the Oracle" set)
                 case 26169:
                 {

@@ -1424,6 +1424,7 @@ void AddBattlegroundScripts()
     void AddSC_npc_teleport();
 	void AddSC_item_reset_talent();
 	void AddSC_Title_NPC();
+	void AddSC_npc_morpher();
 #endif
 
 void AddCustomScripts()
@@ -1436,5 +1437,6 @@ void AddCustomScripts()
     AddSC_npc_teleport();  
 	AddSC_item_reset_talent();
 	AddSC_Title_NPC();
+	AddSC_npc_morpher();
 #endif
 }

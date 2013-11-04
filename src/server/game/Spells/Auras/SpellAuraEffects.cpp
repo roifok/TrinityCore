@@ -5846,6 +5846,7 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
                     return;
                 }
                 break;
+
             case 38772: // Grievous Wound
             {
                 uint32 percent = GetSpellInfo()->Effects[EFFECT_1].CalcValue(caster);
@@ -5854,7 +5855,8 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
                     target->RemoveAurasDueToSpell(GetSpellInfo()->Id);
                     return;
                 }
-                break;
+                break;				
+				
             }
         }
     }

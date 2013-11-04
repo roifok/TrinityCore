@@ -481,6 +481,7 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                 }
                 break;
             }
+
             case SPELLFAMILY_PRIEST:
             {
                 // Improved Mind Blast (Mind Blast in shadow form bonus)
@@ -2236,6 +2237,9 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
         case 1161:
             numSummons = (damage > 0) ? damage : 1;
             break;
+		case 3097:
+			numSummons = 3;
+			break;
         default:
             numSummons = 1;
             break;
@@ -3927,10 +3931,88 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
             }
             break;
         }
-
-        case SPELLFAMILY_PRIEST:
+		case SPELLFAMILY_PALADIN:
         {
-<<<<<<< HEAD
+            // Judgement (seal trigger)
+            if (m_spellInfo->GetCategory() == SPELLCATEGORY_JUDGEMENT)
+            {
+                if (!unitTarget || !unitTarget->IsAlive())
+                    return;
+                uint32 spellId1 = 0;
+                uint32 spellId2 = 0;
+
+                // Judgement self add switch
+                switch (m_spellInfo->Id)
+                {
+                    case 53407: spellId1 = 20184; break;    // Judgement of Justice
+                    case 20271:                             // Judgement of Light
+                    case 57774: spellId1 = 20185; break;    // Judgement of Light
+                    case 53408: spellId1 = 20186; break;    // Judgement of Wisdom
+                    default:
+                        TC_LOG_ERROR(LOG_FILTER_SPELLS_AURAS, "Unsupported Judgement (seal trigger) spell (Id: %u) in Spell::EffectScriptEffect", m_spellInfo->Id);
+                        return;
+                }
+                // all seals have aura dummy in 2 effect
+                Unit::AuraApplicationMap & sealAuras = m_caster->GetAppliedAuras();
+                for (Unit::AuraApplicationMap::iterator iter = sealAuras.begin(); iter != sealAuras.end();)
+                {
+                    Aura* aura = iter->second->GetBase();
+                    if (aura->GetSpellInfo()->GetSpellSpecific() == SPELL_SPECIFIC_SEAL)
+                    {
+                        if (AuraEffect* aureff = aura->GetEffect(2))
+                            if (aureff->GetAuraType() == SPELL_AURA_DUMMY)
+                            {
+                                if (sSpellMgr->GetSpellInfo(aureff->GetAmount()))
+                                    spellId2 = aureff->GetAmount();
+                                break;
+                            }
+                        if (!spellId2)
+                        {
+                            switch (iter->first)
+                            {
+                                // Seal of light, Seal of wisdom, Seal of justice
+                                case 20165:
+                                case 20166:
+                                case 20164:
+                                    spellId2 = 54158;
+                            }
+                        }
+                        break;
+                    }
+                    else
+                        ++iter;
+                }
+                if (spellId1)
+                    m_caster->CastSpell(unitTarget, spellId1, true);
+                if (spellId2)
+                    m_caster->CastSpell(unitTarget, spellId2, true);
+                return;
+            }
+            break;
+        }
+        case SPELLFAMILY_DEATHKNIGHT:
+        {
+            // Pestilence
+            if (m_spellInfo->SpellFamilyFlags[1]&0x10000)
+            {
+                // Get diseases on target of spell
+                if (m_targets.GetUnitTarget() &&  // Glyph of Disease - cast on unit target too to refresh aura
+                    (m_targets.GetUnitTarget() != unitTarget || m_caster->GetAura(63334)))
+                {
+                    // And spread them on target
+                    // Blood Plague
+                    if (m_targets.GetUnitTarget()->GetAura(55078))
+                        m_caster->CastSpell(unitTarget, 55078, true);
+                    // Frost Fever
+                    if (m_targets.GetUnitTarget()->GetAura(55095))
+                        m_caster->CastSpell(unitTarget, 55095, true);
+                }
+            }
+            break;
+        }
+
+		case SPELLFAMILY_PRIEST:
+        {
 				if(m_spellInfo->Id == 89490) // Strenght of Soul
 				{
 					if(m_caster->HasAura(89488)) // Strenght of Soul rank 1
@@ -3956,36 +4038,6 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
 				}
 		   } 
 		break;
-=======
-            // Judgement (seal trigger)
-            if (m_spellInfo->GetCategory() == SPELLCATEGORY_JUDGEMENT)
-            {
-                if (!unitTarget || !unitTarget->IsAlive())
-                    return;
-                uint32 spellId1 = 0;
-                uint32 spellId2 = 0;
->>>>>>> trinitycore/4.3.4
-
-        case SPELLFAMILY_DEATHKNIGHT:
-        {
-            // Pestilence
-            if (m_spellInfo->SpellFamilyFlags[1]&0x10000)
-            {
-                // Get diseases on target of spell
-                if (m_targets.GetUnitTarget() &&  // Glyph of Disease - cast on unit target too to refresh aura
-                    (m_targets.GetUnitTarget() != unitTarget || m_caster->GetAura(63334)))
-                {
-                    // And spread them on target
-                    // Blood Plague
-                    if (m_targets.GetUnitTarget()->GetAura(55078))
-                        m_caster->CastSpell(unitTarget, 55078, true);
-                    // Frost Fever
-                    if (m_targets.GetUnitTarget()->GetAura(55095))
-                        m_caster->CastSpell(unitTarget, 55095, true);
-                }
-            }
-            break;
-        }
     }
 
     // normal DB scripted effect
