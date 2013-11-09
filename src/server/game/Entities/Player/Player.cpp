@@ -3332,11 +3332,11 @@ void Player::InitStatsForLevel(bool reapplyMods)
     SetInt32Value(UNIT_FIELD_ATTACK_POWER,            0);
     SetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS, 0);
     SetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG, 0);
-    SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, 1.0f);
+    SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, 0.0f);
     SetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER,     0);
     SetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS, 0);
     SetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG, 0);
-    SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, 1.0f);
+    SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, 0.0f);
 
     // Base crit values (will be recalculated in UpdateAllStats() at loading and in _ApplyAllStatBonuses() at reset
     SetFloatValue(PLAYER_CRIT_PERCENTAGE, 0.0f);
@@ -8286,23 +8286,12 @@ void Player::_ApplyItemBonuses(ItemTemplate const* proto, uint8 slot, bool apply
                 ApplyRatingMod(CR_EXPERTISE, int32(val), apply);
                 break;
             case ITEM_MOD_ATTACK_POWER:
-                if (float(val) > 0.f)
-                 {
-                    HandleStatModifier(UNIT_MOD_ATTACK_POWER_POS, TOTAL_VALUE, float(val), apply);
-                    HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_POS, TOTAL_VALUE, float(val), apply);
-                 }
-                else
-                 {
-                    HandleStatModifier(UNIT_MOD_ATTACK_POWER_NEG, TOTAL_VALUE, -float(val), apply);
-                    HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, -float(val), apply);
-                 }
-                 break;
+                HandleStatModifier((val > 0) ? UNIT_MOD_ATTACK_POWER_POS : UNIT_MOD_ATTACK_POWER_NEG, TOTAL_VALUE, float(val), apply);
+                HandleStatModifier((val > 0) ? UNIT_MOD_ATTACK_POWER_RANGED_POS : UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, float(val), apply);
+				break;
             case ITEM_MOD_RANGED_ATTACK_POWER:
-                if (float(val) > 0.f)
-                    HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_POS, TOTAL_VALUE, float(val), apply);
-                else
-                    HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, -float(val), apply);
-                 break;
+                HandleStatModifier((val > 0) ? UNIT_MOD_ATTACK_POWER_RANGED_POS : UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, float(val), apply);
+                break;
             case ITEM_MOD_MANA_REGENERATION:
                 ApplyManaRegenBonus(int32(val), apply);
                 break;
@@ -13768,22 +13757,11 @@ void Player::ApplyReforgeEnchantment(Item* item, bool apply)
             ApplyRatingMod(CR_EXPERTISE, -int32(removeValue), apply);
             break;
         case ITEM_MOD_ATTACK_POWER:
-            if (float(removeValue) > 0.f)
-            {
-              HandleStatModifier(UNIT_MOD_ATTACK_POWER_POS, TOTAL_VALUE, -removeValue, apply);
-              HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_POS, TOTAL_VALUE, -removeValue, apply);
-            }
-           else
-            {
-              HandleStatModifier(UNIT_MOD_ATTACK_POWER_NEG, TOTAL_VALUE, -removeValue, apply);
-              HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, -removeValue, apply);
-            }
+            HandleStatModifier((removeValue > 0) ? UNIT_MOD_ATTACK_POWER_POS : UNIT_MOD_ATTACK_POWER_NEG, TOTAL_VALUE, -removeValue, apply);
+            HandleStatModifier((removeValue > 0) ? UNIT_MOD_ATTACK_POWER_RANGED_POS : UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, -removeValue, apply);
             break;
         case ITEM_MOD_RANGED_ATTACK_POWER:
-            if (float(removeValue) > 0.f)
-               HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_POS, TOTAL_VALUE, -removeValue, apply);
-            else
-               HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, -removeValue, apply);
+            HandleStatModifier((removeValue > 0) ? UNIT_MOD_ATTACK_POWER_RANGED_POS : UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, -removeValue, apply);
             break;
         case ITEM_MOD_MANA_REGENERATION:
             ApplyManaRegenBonus(-int32(removeValue), apply);
@@ -13892,22 +13870,11 @@ void Player::ApplyReforgeEnchantment(Item* item, bool apply)
             ApplyRatingMod(CR_EXPERTISE, int32(addValue), apply);
             break;
         case ITEM_MOD_ATTACK_POWER:
-            if (float(addValue) > 0.f)
-              {
-                HandleStatModifier(UNIT_MOD_ATTACK_POWER_POS, TOTAL_VALUE, addValue, apply);
-                HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_POS, TOTAL_VALUE, addValue, apply);
-              }
-           else
-              {
-                HandleStatModifier(UNIT_MOD_ATTACK_POWER_NEG, TOTAL_VALUE, addValue, apply);
-                HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, addValue, apply);
-              }
+            HandleStatModifier((addValue > 0) ? UNIT_MOD_ATTACK_POWER_POS : UNIT_MOD_ATTACK_POWER_NEG, TOTAL_VALUE, addValue, apply);
+            HandleStatModifier((addValue > 0) ? UNIT_MOD_ATTACK_POWER_RANGED_POS : UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, addValue, apply);
             break;
         case ITEM_MOD_RANGED_ATTACK_POWER:
-            if (float(addValue) > 0.f)
-                HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_POS, TOTAL_VALUE, addValue, apply);
-            else
-                HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, addValue, apply);
+            HandleStatModifier((addValue > 0) ? UNIT_MOD_ATTACK_POWER_RANGED_POS : UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, addValue, apply);
             break;
         case ITEM_MOD_MANA_REGENERATION:
             ApplyManaRegenBonus(int32(addValue), apply);
@@ -14233,23 +14200,12 @@ void Player::ApplyEnchantment(Item* item, EnchantmentSlot slot, bool apply, bool
                             TC_LOG_DEBUG(LOG_FILTER_PLAYER_ITEMS, "+ %u EXPERTISE", enchant_amount);
                             break;
                         case ITEM_MOD_ATTACK_POWER:
-                            if (float(enchant_amount) > 0.f)
-                              {
-                                HandleStatModifier(UNIT_MOD_ATTACK_POWER_POS, TOTAL_VALUE, float(enchant_amount), apply);
-                                HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_POS, TOTAL_VALUE, float(enchant_amount), apply);
-                              }
-                            else
-                              {
-                                HandleStatModifier(UNIT_MOD_ATTACK_POWER_NEG, TOTAL_VALUE, -float(enchant_amount), apply);
-                                HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, -float(enchant_amount), apply);
-                              }
+                            HandleStatModifier((enchant_amount > 0) ? UNIT_MOD_ATTACK_POWER_POS : UNIT_MOD_ATTACK_POWER_NEG, TOTAL_VALUE, float(enchant_amount), apply);
+                            HandleStatModifier((enchant_amount > 0) ? UNIT_MOD_ATTACK_POWER_RANGED_POS : UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, float(enchant_amount), apply);
                             TC_LOG_DEBUG(LOG_FILTER_PLAYER_ITEMS, "+ %u ATTACK_POWER", enchant_amount);
                             break;
                         case ITEM_MOD_RANGED_ATTACK_POWER:
-                            if (float(enchant_amount) > 0.f)
-                                HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_POS, TOTAL_VALUE, float(enchant_amount), apply);
-                            else
-                                HandleStatModifier(UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, -float(enchant_amount), apply);
+                            HandleStatModifier((enchant_amount > 0) ? UNIT_MOD_ATTACK_POWER_RANGED_POS : UNIT_MOD_ATTACK_POWER_RANGED_NEG, TOTAL_VALUE, float(enchant_amount), apply);
                             TC_LOG_DEBUG(LOG_FILTER_PLAYER_ITEMS, "+ %u RANGED_ATTACK_POWER", enchant_amount);
                             break;
                         case ITEM_MOD_MANA_REGENERATION:

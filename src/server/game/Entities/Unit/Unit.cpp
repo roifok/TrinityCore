@@ -5355,14 +5355,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     target = this;
                     break;
                 }
-                //Mind Melt
-                case 87160:
-                case 81292:
-                {
-                    if(procSpell->Id != 73510)
-                        return false;
-                    break;
-                }
                 // Shadowfiend Death (Gain mana if pet dies with Glyph of Shadowfiend)
                 case 57989:
                 {
@@ -11765,10 +11757,9 @@ bool Unit::HandleStatModifier(UnitMods unitMod, UnitModifierType modifierType, f
         case UNIT_MOD_RESISTANCE_SHADOW:
         case UNIT_MOD_RESISTANCE_ARCANE:   UpdateResistances(GetSpellSchoolByAuraGroup(unitMod));      break;
 
-        case UNIT_MOD_ATTACK_POWER:        UpdateAttackPowerAndDamage();         break;
+        //case UNIT_MOD_ATTACK_POWER:        UpdateAttackPowerAndDamage();         break;
         case UNIT_MOD_ATTACK_POWER_POS:    UpdateAttackPowerAndDamage();         break;
         case UNIT_MOD_ATTACK_POWER_NEG:    UpdateAttackPowerAndDamage();         break;
-
         case UNIT_MOD_ATTACK_POWER_RANGED_POS: UpdateAttackPowerAndDamage(true);     break;
         case UNIT_MOD_ATTACK_POWER_RANGED_NEG: UpdateAttackPowerAndDamage(true);     break;
  
@@ -11890,14 +11881,14 @@ float Unit::GetTotalAttackPowerValue(WeaponAttackType attType) const
 {
     if (attType == RANGED_ATTACK)
     {
-        int32 ap = GetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER) + GetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS) - GetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG);
+        int32 ap = GetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER) + GetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS) + GetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG);
         if (ap < 0)
             return 0.0f;
         return ap * (1.0f + GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER));
     }
     else
     {
-        int32 ap = GetInt32Value(UNIT_FIELD_ATTACK_POWER) + GetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS) - GetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG);
+        int32 ap = GetInt32Value(UNIT_FIELD_ATTACK_POWER) + GetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS) + GetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG);
         if (ap < 0)
             return 0.0f;
         return ap * (1.0f + GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER));

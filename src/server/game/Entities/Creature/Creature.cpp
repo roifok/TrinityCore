@@ -1081,15 +1081,15 @@ void Creature::SelectLevel(const CreatureTemplate* cinfo)
     SetModifierValue(UNIT_MOD_MANA, BASE_VALUE, (float)mana);
 
     //damage
-    //float damagemod = _GetDamageMod(rank);      // Set during loading templates into dmg_multiplier field
+    float damagemod = _GetDamageMod(rank);      // Set during loading templates into dmg_multiplier field
 
-    //SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(cinfo->mindmg));
-    //SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(cinfo->maxdmg));
+    SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(cinfo->mindmg));
+    SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(cinfo->maxdmg));
 
     SetFloatValue(UNIT_FIELD_MINRANGEDDAMAGE, cinfo->minrangedmg);
     SetFloatValue(UNIT_FIELD_MAXRANGEDDAMAGE, cinfo->maxrangedmg);
 
-    SetModifierValue(UNIT_MOD_ATTACK_POWER_POS, BASE_VALUE, cinfo->attackpower * GetCreatureTemplate()->dmg_multiplier);
+    SetModifierValue(UNIT_MOD_ATTACK_POWER_POS, BASE_VALUE, cinfo->attackpower * damagemod);
     SetModifierValue(UNIT_MOD_ATTACK_POWER_NEG, BASE_VALUE, 0);
 
 }

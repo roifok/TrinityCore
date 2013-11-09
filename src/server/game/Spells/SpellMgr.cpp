@@ -3137,10 +3137,11 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 82661: // Aspect of the Fox
                 spellInfo->Effects[0].ApplyAuraName = SPELL_AURA_PROC_TRIGGER_SPELL;
                 break;
-			case 81261://Solar Beam
-				spellInfo->Effects[0].ApplyAuraName = SPELL_EFFECT_APPLY_AURA;
-				spellInfo->DurationEntry = sSpellDurationStore.LookupEntry(10); //Duration
-				break;
+			case 78675:
+				spellInfo->Effects[EFFECT_0].TriggerSpell = 81261;
+			/*case 81261:
+				spellInfo->DurationEntry = sSpellDurationStore.LookupEntry(10); //Duration;
+				break;*/
             case 86105:// Jinx
             case 85547:
                 spellInfo->DurationEntry = sSpellDurationStore.LookupEntry(5);

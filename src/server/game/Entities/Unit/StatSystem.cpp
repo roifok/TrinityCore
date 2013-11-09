@@ -290,7 +290,7 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
         index_mod_neg = UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG;
         index_mult = UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER;
         val2 = (level + std::max(GetStat(STAT_AGILITY) - 10.0f, 0.0f)) * entry->RAPPerAgility;
-    }
+	}
     else
     {
         float strengthValue = std::max((GetStat(STAT_STRENGTH) - 10.0f) * entry->APPerStrenth, 0.0f);
@@ -306,8 +306,8 @@ void Player::UpdateAttackPowerAndDamage(bool ranged)
 
     SetModifierValue(unitMod_pos, BASE_VALUE, val2);
 
-    float base_attPower = (GetModifierValue(unitMod_pos, BASE_VALUE) - GetModifierValue(unitMod_neg, BASE_VALUE)) * (GetModifierValue(unitMod_pos, BASE_PCT) + (1 - GetModifierValue(unitMod_neg, BASE_PCT)));
-    float attPowerMod_pos = GetModifierValue(unitMod_pos, TOTAL_VALUE);
+    float base_attPower   = (GetModifierValue(unitMod_pos, BASE_VALUE) + GetModifierValue(unitMod_neg, BASE_VALUE)) * (GetModifierValue(unitMod_pos, BASE_PCT) + (GetModifierValue(unitMod_neg, BASE_PCT) - 1));
+	float attPowerMod_pos = GetModifierValue(unitMod_pos, TOTAL_VALUE);
     float attPowerMod_neg = GetModifierValue(unitMod_neg, TOTAL_VALUE);
 
     //add dynamic flat mods
@@ -392,6 +392,7 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, bo
     float weapon_mindamage = GetWeaponDamageRange(attType, MINDAMAGE);
     float weapon_maxdamage = GetWeaponDamageRange(attType, MAXDAMAGE);
 
+
     if (IsInFeralForm())                                    //check if player is druid and in cat or bear forms
     {
         float weaponSpeed = BASE_ATTACK_TIME / 1000.f;
@@ -421,11 +422,12 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, bo
         weapon_mindamage = BASE_MINDAMAGE;
         weapon_maxdamage = BASE_MAXDAMAGE;
     }
-    /*
-    TODO: Is this still needed after ammo has been removed?
+    
+    /*//TODO: Is this still needed after ammo has been removed?
     else if (attType == RANGED_ATTACK)                       //add ammo DPS to ranged damage
     {
-        weapon_mindamage += ammo * att_speed;
+		float ammo = GetTotalAttackPowerValue(RANGED_ATTACK)/10;
+        weapon_mindamage +=  ammo * att_speed;
         weapon_maxdamage += ammo * att_speed;
     }*/
 
@@ -900,13 +902,14 @@ void Creature::UpdateAttackPowerAndDamage(bool ranged)
         index_mult  = UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER;
     }
 
-    float base_attPower  = (GetModifierValue(unitMod_pos, BASE_VALUE) - GetModifierValue(unitMod_neg, BASE_VALUE)) * (GetModifierValue(unitMod_pos, BASE_PCT) + (1 - GetModifierValue(unitMod_neg, BASE_PCT)));
+    float base_attPower   = (GetModifierValue(unitMod_pos, BASE_VALUE) + GetModifierValue(unitMod_neg, BASE_VALUE)) * (GetModifierValue(unitMod_pos, BASE_PCT) + (GetModifierValue(unitMod_neg, BASE_PCT) - 1));
     float attPowerMod_pos  = GetModifierValue(unitMod_pos, TOTAL_VALUE);
     float attPowerMod_neg  = GetModifierValue(unitMod_neg, TOTAL_VALUE);
-    float attPowerMultiplier = (GetModifierValue(unitMod_pos, TOTAL_PCT) + (1 - GetModifierValue(unitMod_neg, TOTAL_PCT)))- 1.0f;
-    SetInt32Value(index, (uint32)base_attPower); // UNIT_FIELD_(RANGED)_ATTACK_POWER field
-    SetInt32Value(index_mod_pos, (uint32)attPowerMod_pos); // UNIT_FIELD_(RANGED)_ATTACK_POWER_MOD_POS field
-    SetInt32Value(index_mod_neg, (uint32)attPowerMod_neg); // UNIT_FIELD_(RANGED)_ATTACK_POWER_MOD_NEG field
+    float attPowerMultiplier = ((GetModifierValue(unitMod_pos, TOTAL_PCT) - 1.0f) + (GetModifierValue(unitMod_neg, TOTAL_PCT) - 1.0f));
+    
+	SetInt32Value(index, (int32)base_attPower); // UNIT_FIELD_(RANGED)_ATTACK_POWER field
+    SetInt32Value(index_mod_pos, (int32)attPowerMod_pos); // UNIT_FIELD_(RANGED)_ATTACK_POWER_MOD_POS field
+    SetInt32Value(index_mod_neg, (int32)attPowerMod_neg); // UNIT_FIELD_(RANGED)_ATTACK_POWER_MOD_NEG field
     SetFloatValue(index_mult, attPowerMultiplier); // UNIT_FIELD_(RANGED)_ATTACK_POWER_MULTIPLIER field
    
     //automatically update weapon damage after attack power modification
@@ -1241,15 +1244,16 @@ void Guardian::UpdateAttackPowerAndDamage(bool ranged)
     else
     {
         SetModifierValue(UNIT_MOD_ATTACK_POWER_POS, BASE_VALUE, val);
-        SetModifierValue(UNIT_MOD_ATTACK_POWER_NEG, BASE_VALUE, -bonusAP);
+        SetModifierValue(UNIT_MOD_ATTACK_POWER_NEG, BASE_VALUE, bonusAP);
     }
 
     //in BASE_VALUE of UNIT_MOD_ATTACK_POWER for creatures we store data of meleeattackpower field in DB
-    float base_attPower = (GetModifierValue(unitMod_pos, BASE_VALUE) - GetModifierValue(unitMod_neg, BASE_VALUE)) * (GetModifierValue(unitMod_pos, BASE_PCT) + (1 - GetModifierValue(unitMod_neg, BASE_PCT)));
+    float base_attPower   = (GetModifierValue(unitMod_pos, BASE_VALUE) + GetModifierValue(unitMod_neg, BASE_VALUE)) * (GetModifierValue(unitMod_pos, BASE_PCT) + (GetModifierValue(unitMod_neg, BASE_PCT) - 1));
     float attPowerMod_pos = GetModifierValue(unitMod_pos, TOTAL_VALUE);
     float attPowerMod_neg = GetModifierValue(unitMod_neg, TOTAL_VALUE);
-    float attPowerMultiplier = (GetModifierValue(unitMod_pos, TOTAL_PCT) + (1 - GetModifierValue(unitMod_neg, TOTAL_PCT))) - 1.0f;
-    SetInt32Value(UNIT_FIELD_ATTACK_POWER, (int32)base_attPower);
+    float attPowerMultiplier = ((GetModifierValue(unitMod_pos, TOTAL_PCT) - 1.0f) + (GetModifierValue(unitMod_neg, TOTAL_PCT) - 1.0f));
+   
+	SetInt32Value(UNIT_FIELD_ATTACK_POWER, (int32)base_attPower);
     SetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS, (int32)attPowerMod_pos);
     SetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG, (int32)attPowerMod_neg);
 
